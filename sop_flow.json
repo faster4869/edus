@@ -1,0 +1,1103 @@
+{
+  "title": "7/1Dispute已退款正式上線 (v35.2)Scene Recognition Flow（Can't Delete !!）",
+  "startNode": "SOP1_Node1",
+  "nodes": {
+    "SOP1_Node60": {
+      "type": "question",
+      "kind": "system",
+      "text": "(系統判讀)賣家類型",
+      "options": [
+        {
+          "label": "Local C2C",
+          "next": "SOP1_Node212"
+        },
+        {
+          "label": "Local B2C",
+          "next": "SOP1_Node235"
+        },
+        {
+          "label": "CB",
+          "next": "SOP1_Node118"
+        },
+        {
+          "label": "Null",
+          "next": "SOP1_Node63"
+        }
+      ]
+    },
+    "__auto_outcome_1": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "CB/Local：CB（轉往其他流程 SOP57_Node2）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP57_Node2），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_2": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "CB/Local：Local（轉往其他流程 SOP63_Node295）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP63_Node295），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node217": {
+      "type": "question",
+      "kind": "system",
+      "text": "CB/Local",
+      "options": [
+        {
+          "label": "CB",
+          "next": "__auto_outcome_1"
+        },
+        {
+          "label": "Local",
+          "next": "__auto_outcome_2"
+        }
+      ]
+    },
+    "SOP1_Node1": {
+      "type": "question",
+      "kind": "system",
+      "text": "(系統判讀)案件類型",
+      "options": [
+        {
+          "label": "Review ",
+          "next": "SOP1_Node215"
+        },
+        {
+          "label": "Dispute",
+          "next": "SOP1_Node240"
+        }
+      ]
+    },
+    "SOP1_Node96": {
+      "type": "outcome",
+      "result": "incorrect",
+      "text": "請重選SOP Tool此場景暫不支援",
+      "note": ""
+    },
+    "__auto_outcome_3": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "Mall特殊賣家判定：愛買（轉往其他流程 SOP45_Node3）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP45_Node3），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_4": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "Mall特殊賣家判定：神腦（轉往其他流程 SOP45_Node187）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP45_Node187），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node155": {
+      "type": "question",
+      "kind": "system",
+      "text": "Mall特殊賣家判定",
+      "options": [
+        {
+          "label": "愛買",
+          "next": "__auto_outcome_3"
+        },
+        {
+          "label": "神腦",
+          "next": "__auto_outcome_4"
+        },
+        {
+          "label": "其他一般賣家",
+          "next": "SOP1_Node218"
+        }
+      ]
+    },
+    "__auto_outcome_5": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "是否可確認買家申退商品錯誤：可確認買家申退商品錯誤>>判決取消（轉往其他流程 SOP60_Node383）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP60_Node383），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node212": {
+      "type": "question",
+      "kind": "manual",
+      "text": "是否可確認買家申退商品錯誤",
+      "options": [
+        {
+          "label": "買家申退商品正確/無法確認>>繼續流程",
+          "next": "SOP1_Node209"
+        },
+        {
+          "label": "可確認買家申退商品錯誤>>判決取消",
+          "next": "__auto_outcome_5"
+        }
+      ]
+    },
+    "SOP1_Node229": {
+      "type": "question",
+      "kind": "manual",
+      "text": "添加 #HotListingMismatch Note And Reminder",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "SOP1_Node155"
+        }
+      ]
+    },
+    "SOP1_Node241": {
+      "type": "question",
+      "kind": "manual",
+      "text": "直播訂單商品類型 玉石/貴金屬定義：黃金、鑽石、寶石、玉石、珠寶、翡翠、珍珠、貝類、水晶、瑪瑙、琥珀等貴金屬/玉石商品",
+      "options": [
+        {
+          "label": "玉石/貴金屬商品",
+          "next": "SOP1_Node242"
+        },
+        {
+          "label": "非玉石/貴金屬商品",
+          "next": "SOP1_Node243"
+        }
+      ]
+    },
+    "__auto_outcome_6": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "請參考下方的違禁品清單點選對應爭議案件類型 高風險違禁品清單： 毒品 武器(槍枝) 貨幣 (假鈔, 信用卡) 菸, 酒, 電子菸及配件 買家Review申退時判決原因為【 違禁品(僅退款/拒絕賠償)】 非上述高風險違禁品但懷疑可能為違禁品可先進入流程確認：是 / 可能是違禁品>>跳轉違禁品流程（轉往其他流程 SOP51_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP51_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node177": {
+      "type": "question",
+      "kind": "manual",
+      "text": "請參考下方的違禁品清單點選對應爭議案件類型 高風險違禁品清單： 毒品 武器(槍枝) 貨幣 (假鈔, 信用卡) 菸, 酒, 電子菸及配件 買家Review申退時判決原因為【 違禁品(僅退款/拒絕賠償)】 非上述高風險違禁品但懷疑可能為違禁品可先進入流程確認",
+      "options": [
+        {
+          "label": "是 / 可能是違禁品>>跳轉違禁品流程",
+          "next": "__auto_outcome_6"
+        },
+        {
+          "label": "正常案件",
+          "next": "SOP1_Node224"
+        }
+      ]
+    },
+    "__auto_outcome_7": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "買家退貨原因是否為假貨：買家退貨原因=假貨（轉往其他流程 SOP59_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP59_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node235": {
+      "type": "question",
+      "kind": "system",
+      "text": "買家退貨原因是否為假貨",
+      "options": [
+        {
+          "label": "買家退貨原因=假貨",
+          "next": "__auto_outcome_7"
+        },
+        {
+          "label": "買家退貨原因非假貨",
+          "next": "SOP1_Node239"
+        }
+      ]
+    },
+    "SOP1_Node243": {
+      "type": "question",
+      "kind": "manual",
+      "text": "直播單：玉石/非貴金屬商品 Note And Reminder",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "SOP1_Node228"
+        }
+      ]
+    },
+    "SOP1_Node224": {
+      "type": "question",
+      "kind": "manual",
+      "text": "需轉Dispute的案件( TW /PH) / 正常Review案件",
+      "options": [
+        {
+          "label": "跳轉Dispute案件",
+          "next": "SOP1_Node196"
+        },
+        {
+          "label": "正常Review 案件",
+          "next": "SOP1_Node220"
+        }
+      ]
+    },
+    "SOP1_Node63": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "End",
+      "note": ""
+    },
+    "__auto_outcome_8": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "是否已逾鑑賞期( 講義 ) C2C：7天；B2C：15天 提醒： 1.非整合物流若資訊/聊聊無法確認配達日，因無法判斷鑑賞期，請依未超過鑑賞期流程判決 2.若買家真實退貨原因=未收到包裹，請先選\"買家申退未超過鑑賞期\"：買家申退已超過鑑賞期（轉往其他流程 SOP60_Node504）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP60_Node504），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node215": {
+      "type": "question",
+      "kind": "manual",
+      "text": "是否已逾鑑賞期( 講義 ) C2C：7天；B2C：15天 提醒： 1.非整合物流若資訊/聊聊無法確認配達日，因無法判斷鑑賞期，請依未超過鑑賞期流程判決 2.若買家真實退貨原因=未收到包裹，請先選\"買家申退未超過鑑賞期\"",
+      "options": [
+        {
+          "label": "買家申退未超過鑑賞期",
+          "next": "SOP1_Node177"
+        },
+        {
+          "label": "買家申退已超過鑑賞期",
+          "next": "__auto_outcome_8"
+        }
+      ]
+    },
+    "__auto_outcome_9": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統判讀) Seller type：Mall（轉往其他流程 SOP18_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP18_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_10": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統判讀) Seller type：Local C2C（轉往其他流程 SOP11_Node4）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP11_Node4），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_11": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統判讀) Seller type：CB（轉往其他流程 SOP19_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP19_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node95": {
+      "type": "question",
+      "kind": "system",
+      "text": "(系統判讀) Seller type",
+      "options": [
+        {
+          "label": "Mall",
+          "next": "__auto_outcome_9"
+        },
+        {
+          "label": "Local C2C",
+          "next": "__auto_outcome_10"
+        },
+        {
+          "label": "CB",
+          "next": "__auto_outcome_11"
+        },
+        {
+          "label": "Default",
+          "next": "SOP1_Node96"
+        }
+      ]
+    },
+    "__auto_outcome_12": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "Re-raise賣家初始證據是否有效：Re-raise賣家初始證據無效（轉往其他流程 SOP66_Node6）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP66_Node6），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node230": {
+      "type": "question",
+      "kind": "manual",
+      "text": "Re-raise賣家初始證據是否有效",
+      "options": [
+        {
+          "label": "Re-raise賣家初始證據有效",
+          "next": "SOP1_Node256"
+        },
+        {
+          "label": "Re-raise賣家初始證據無效",
+          "next": "__auto_outcome_12"
+        }
+      ]
+    },
+    "__auto_outcome_13": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "買賣家證據是否有編輯/造假：有>編輯造假流程（轉往其他流程 SOP60_Node44）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP60_Node44），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node220": {
+      "type": "question",
+      "kind": "manual",
+      "text": "買賣家證據是否有編輯/造假",
+      "options": [
+        {
+          "label": "無>繼續流程",
+          "next": "SOP1_Node60"
+        },
+        {
+          "label": "有>編輯造假流程",
+          "next": "__auto_outcome_13"
+        }
+      ]
+    },
+    "SOP1_Node206": {
+      "type": "question",
+      "kind": "manual",
+      "text": "是否已有協議或為其他特殊流程 若無協議且非其他特殊流程請選\"後續判斷(正常Flow A/B/C案件)\" 其他特殊流程 ●直播單 ●虛擬商品 ●易腐敗商品 ●例外商品缺件 ●SPX流程 ●分期訂單 ●商品已寄回賣家",
+      "options": [
+        {
+          "label": "轉通用前置流程(協議/包裹有毀損)",
+          "next": "SOP1_Node233"
+        },
+        {
+          "label": "後續判斷(正常Flow A/B/C案件)",
+          "next": "SOP1_Node200"
+        },
+        {
+          "label": "其他特殊流程",
+          "next": "SOP1_Node232"
+        }
+      ]
+    },
+    "__auto_outcome_14": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "其他特殊流程：1.SPX流程（轉往其他流程 SOP49_Node4）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP49_Node4），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_15": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "其他特殊流程：2.直播單（轉往其他流程 SOP61_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP61_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_16": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "其他特殊流程：3.虛擬商品（轉往其他流程 SOP65_Node59）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP65_Node59），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_17": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "其他特殊流程：4.易腐敗商品（轉往其他流程 SOP5_Node171）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP5_Node171），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_18": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "其他特殊流程：5.例外商品缺件（轉往其他流程 SOP63_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP63_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_19": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "其他特殊流程：6.分期訂單（轉往其他流程 SOP54_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP54_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node232": {
+      "type": "question",
+      "kind": "manual",
+      "text": "其他特殊流程",
+      "options": [
+        {
+          "label": "1.SPX流程",
+          "next": "__auto_outcome_14"
+        },
+        {
+          "label": "2.直播單",
+          "next": "__auto_outcome_15"
+        },
+        {
+          "label": "3.虛擬商品",
+          "next": "__auto_outcome_16"
+        },
+        {
+          "label": "4.易腐敗商品",
+          "next": "__auto_outcome_17"
+        },
+        {
+          "label": "5.例外商品缺件",
+          "next": "__auto_outcome_18"
+        },
+        {
+          "label": "6.分期訂單",
+          "next": "__auto_outcome_19"
+        }
+      ]
+    },
+    "SOP1_Node240": {
+      "type": "question",
+      "kind": "manual",
+      "text": "爭議案件是否為直播訂單",
+      "options": [
+        {
+          "label": "直播訂單",
+          "next": "SOP1_Node241"
+        },
+        {
+          "label": "非直播訂單",
+          "next": "SOP1_Node228"
+        }
+      ]
+    },
+    "__auto_outcome_20": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "CB(系統判讀)是否為商城假貨案件：商城假貨案件（轉往其他流程 SOP59_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP59_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node118": {
+      "type": "question",
+      "kind": "system",
+      "text": "CB(系統判讀)是否為商城假貨案件",
+      "options": [
+        {
+          "label": "商城假貨案件",
+          "next": "__auto_outcome_20"
+        },
+        {
+          "label": "非商城假貨案件",
+          "next": "SOP1_Node212"
+        }
+      ]
+    },
+    "SOP1_Node242": {
+      "type": "question",
+      "kind": "manual",
+      "text": "添加短標：直播單：玉石/貴金屬商品 Note And Reminder",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "SOP1_Node228"
+        }
+      ]
+    },
+    "SOP1_Node200": {
+      "type": "question",
+      "kind": "manual",
+      "text": "請確認並更新買家真實退貨原因 Note And Reminder",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "SOP1_Node202"
+        }
+      ]
+    },
+    "SOP1_Node239": {
+      "type": "question",
+      "kind": "system",
+      "text": "商城特殊賣家",
+      "options": [
+        {
+          "label": "神腦",
+          "next": "SOP1_Node214"
+        },
+        {
+          "label": "24H",
+          "next": "SOP1_Node214"
+        },
+        {
+          "label": "愛買",
+          "next": "SOP1_Node214"
+        },
+        {
+          "label": "全國電子",
+          "next": "SOP1_Node214"
+        },
+        {
+          "label": "蝦皮大學",
+          "next": "SOP1_Node214"
+        },
+        {
+          "label": "EsimGo/環亞",
+          "next": "SOP1_Node214"
+        },
+        {
+          "label": "非商城特殊賣家",
+          "next": "SOP1_Node212"
+        }
+      ]
+    },
+    "__auto_outcome_21": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統自動判讀)買家分類：風險買家空包（轉往其他流程 SOP58_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP58_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_22": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統自動判讀)買家分類：風險買家假貨（轉往其他流程 SOP59_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP59_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_23": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統自動判讀)買家分類：風險買家（轉往其他流程 SOP7_Node51）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP7_Node51），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node213": {
+      "type": "question",
+      "kind": "system",
+      "text": "(系統自動判讀)買家分類",
+      "options": [
+        {
+          "label": "非風險買家",
+          "next": "SOP1_Node208"
+        },
+        {
+          "label": "風險買家空包",
+          "next": "__auto_outcome_21"
+        },
+        {
+          "label": "風險買家假貨",
+          "next": "__auto_outcome_22"
+        },
+        {
+          "label": "風險買家",
+          "next": "__auto_outcome_23"
+        }
+      ]
+    },
+    "__auto_outcome_24": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "請依據案件情形更改買家真實退貨原因 Note And Reminder：繼續（轉往其他流程 SOP60_Node380）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP60_Node380），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node233": {
+      "type": "question",
+      "kind": "manual",
+      "text": "請依據案件情形更改買家真實退貨原因 Note And Reminder",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "__auto_outcome_24"
+        }
+      ]
+    },
+    "__auto_outcome_25": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "FA/FB/FC：缺件Flow B（轉往其他流程 SOP55_Node80）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP55_Node80），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_26": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "FA/FB/FC：未收到Flow A（轉往其他流程 SOP53_Node2）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP53_Node2），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node202": {
+      "type": "question",
+      "kind": "system",
+      "text": "FA/FB/FC",
+      "options": [
+        {
+          "label": "缺件Flow B",
+          "next": "__auto_outcome_25"
+        },
+        {
+          "label": "未收到Flow A",
+          "next": "__auto_outcome_26"
+        },
+        {
+          "label": "Flow C",
+          "next": "SOP1_Node213"
+        }
+      ]
+    },
+    "SOP1_Node218": {
+      "type": "question",
+      "kind": "system",
+      "text": "是否為Re-raised dispute",
+      "options": [
+        {
+          "label": "寬限期賣家爭議Re-Raised Dispute",
+          "next": "SOP1_Node219"
+        },
+        {
+          "label": "一般案件",
+          "next": "SOP1_Node231"
+        }
+      ]
+    },
+    "__auto_outcome_27": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "是否為假貨/空包案件：假貨案件（轉往其他流程 SOP59_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP59_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_28": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "是否為假貨/空包案件：空包/調包（轉往其他流程 SOP58_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP58_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node208": {
+      "type": "question",
+      "kind": "system",
+      "text": "是否為假貨/空包案件",
+      "options": [
+        {
+          "label": "假貨案件",
+          "next": "__auto_outcome_27"
+        },
+        {
+          "label": "空包/調包",
+          "next": "__auto_outcome_28"
+        },
+        {
+          "label": "非假貨/空包案件",
+          "next": "SOP1_Node217"
+        }
+      ]
+    },
+    "SOP1_Node228": {
+      "type": "question",
+      "kind": "manual",
+      "text": "買家申退原因與熱門商品(Hot listing)推薦錯誤是否有關",
+      "options": [
+        {
+          "label": "賣家爭議原因與熱門商品推薦錯誤有關",
+          "next": "SOP1_Node229"
+        },
+        {
+          "label": "賣家爭議原因與熱門商品推薦錯誤無關",
+          "next": "SOP1_Node155"
+        }
+      ]
+    },
+    "__auto_outcome_29": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統判讀) Seller type：CB (1)（轉往其他流程 SOP17_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP17_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node92": {
+      "type": "question",
+      "kind": "system",
+      "text": "(系統判讀) Seller type",
+      "options": [
+        {
+          "label": "CB (1)",
+          "next": "__auto_outcome_29"
+        },
+        {
+          "label": "Default",
+          "next": "SOP1_Node254"
+        }
+      ]
+    },
+    "__auto_outcome_30": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統判讀) Seller type：Mall（轉往其他流程 SOP20_Node2）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP20_Node2），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_31": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "(系統判讀) Seller type：Local C2C（轉往其他流程 SOP22_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP22_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node223": {
+      "type": "question",
+      "kind": "system",
+      "text": "(系統判讀) Seller type",
+      "options": [
+        {
+          "label": "Mall",
+          "next": "__auto_outcome_30"
+        },
+        {
+          "label": "Local C2C",
+          "next": "__auto_outcome_31"
+        },
+        {
+          "label": "CB",
+          "next": "SOP1_Node96"
+        },
+        {
+          "label": "Default",
+          "next": "SOP1_Node96"
+        }
+      ]
+    },
+    "__auto_outcome_32": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "此案件是否為環保無包裝退貨：是>>SPX特殊流程（轉往其他流程 SOP49_Node282）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP49_Node282），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node231": {
+      "type": "question",
+      "kind": "manual",
+      "text": "此案件是否為環保無包裝退貨",
+      "options": [
+        {
+          "label": "是>>SPX特殊流程",
+          "next": "__auto_outcome_32"
+        },
+        {
+          "label": "否>>爭議案件類型",
+          "next": "SOP1_Node86"
+        }
+      ]
+    },
+    "__auto_outcome_33": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "AOC RR：AOC RR（轉往其他流程 SOP63_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP63_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node209": {
+      "type": "question",
+      "kind": "system",
+      "text": "AOC RR",
+      "options": [
+        {
+          "label": "AOC RR",
+          "next": "__auto_outcome_33"
+        },
+        {
+          "label": "非AOC RR",
+          "next": "SOP1_Node206"
+        }
+      ]
+    },
+    "__auto_outcome_34": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "依照案件類型選擇 若買家已被退款>>已退款買家-自動退款/快速退款 若尚未退款買家，賣家/倉庫反應收回商品有問題>>收到不對/毀損/商品缺件退貨商品/CB-一般退貨爭議 賣家反應沒收到退貨>>賣家反應：未收到退貨 請參考下方的違禁品清單 高風險違禁品清單： 毒品 武器(槍枝) 貨幣 (假鈔, 信用卡) 菸, 酒, 電子菸及配件 買家Review申退時判決原因為【 違禁品(僅退款/拒絕賠償)】 非上述高風險違禁品但懷疑可能為違禁品可先進入流程確認：賣家反應：未收到退貨（轉往其他流程 SOP12_Node301）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP12_Node301），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_35": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "依照案件類型選擇 若買家已被退款>>已退款買家-自動退款/快速退款 若尚未退款買家，賣家/倉庫反應收回商品有問題>>收到不對/毀損/商品缺件退貨商品/CB-一般退貨爭議 賣家反應沒收到退貨>>賣家反應：未收到退貨 請參考下方的違禁品清單 高風險違禁品清單： 毒品 武器(槍枝) 貨幣 (假鈔, 信用卡) 菸, 酒, 電子菸及配件 買家Review申退時判決原因為【 違禁品(僅退款/拒絕賠償)】 非上述高風險違禁品但懷疑可能為違禁品可先進入流程確認：買家申退商品為違禁品/Review判決原因為違禁品（轉往其他流程 SOP51_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP51_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node86": {
+      "type": "question",
+      "kind": "manual",
+      "text": "依照案件類型選擇 若買家已被退款>>已退款買家-自動退款/快速退款 若尚未退款買家，賣家/倉庫反應收回商品有問題>>收到不對/毀損/商品缺件退貨商品/CB-一般退貨爭議 賣家反應沒收到退貨>>賣家反應：未收到退貨 請參考下方的違禁品清單 高風險違禁品清單： 毒品 武器(槍枝) 貨幣 (假鈔, 信用卡) 菸, 酒, 電子菸及配件 買家Review申退時判決原因為【 違禁品(僅退款/拒絕賠償)】 非上述高風險違禁品但懷疑可能為違禁品可先進入流程確認",
+      "options": [
+        {
+          "label": "已退款買家-自動退款/快速退款",
+          "next": "SOP1_Node92"
+        },
+        {
+          "label": "賣家/倉庫反應：收到不對/毀損/商品缺件退貨商品/CB-一般退貨爭議",
+          "next": "SOP1_Node95"
+        },
+        {
+          "label": "賣家反應：未收到退貨",
+          "next": "__auto_outcome_34"
+        },
+        {
+          "label": "其他-非以上類型",
+          "next": "SOP1_Node223"
+        },
+        {
+          "label": "買家申退商品為違禁品/Review判決原因為違禁品",
+          "next": "__auto_outcome_35"
+        }
+      ]
+    },
+    "__auto_outcome_36": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "特殊賣家轉件 Pending Reason請選 【轉件-Mall特殊賣家】 Pending Reason：繼續（轉往其他流程 SOP71_Node556）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP71_Node556），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node214": {
+      "type": "question",
+      "kind": "manual",
+      "text": "特殊賣家轉件 Pending Reason請選 【轉件-Mall特殊賣家】 Pending Reason",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "__auto_outcome_36"
+        }
+      ]
+    },
+    "__auto_outcome_37": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家發起是否正確：錯誤>接發起錯誤流程（轉往其他流程 SOP66_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP66_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node219": {
+      "type": "question",
+      "kind": "manual",
+      "text": "賣家發起是否正確",
+      "options": [
+        {
+          "label": "正確>接快速退款流程",
+          "next": "SOP1_Node230"
+        },
+        {
+          "label": "錯誤>接發起錯誤流程",
+          "next": "__auto_outcome_37"
+        }
+      ]
+    },
+    "SOP1_Node196": {
+      "type": "question",
+      "kind": "manual",
+      "text": "Pending Reason轉Dispute Pending Reason",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "SOP1_Node155"
+        }
+      ]
+    },
+    "__auto_outcome_38": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "請參考下方的違禁品清單 高風險違禁品清單： 毒品 武器(槍枝) 貨幣 (假鈔, 信用卡) 菸, 酒, 電子菸及配件 買家Review申退時判決原因為【 違禁品(僅退款/拒絕賠償)】 非上述高風險違禁品但懷疑可能為違禁品可先進入流程確認：買家申退商品為違禁品/Review判決原因為違禁品（轉往其他流程 SOP51_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP51_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node248": {
+      "type": "question",
+      "kind": "manual",
+      "text": "請參考下方的違禁品清單 高風險違禁品清單： 毒品 武器(槍枝) 貨幣 (假鈔, 信用卡) 菸, 酒, 電子菸及配件 買家Review申退時判決原因為【 違禁品(僅退款/拒絕賠償)】 非上述高風險違禁品但懷疑可能為違禁品可先進入流程確認",
+      "options": [
+        {
+          "label": "買家申退商品非違禁品",
+          "next": "SOP1_Node249"
+        },
+        {
+          "label": "買家申退商品為違禁品/Review判決原因為違禁品",
+          "next": "__auto_outcome_38"
+        }
+      ]
+    },
+    "__auto_outcome_39": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "買賣家的證據有無編輯造假：證據異常轉編輯造假流程（轉往其他流程 SOP79_Node22）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP79_Node22），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node249": {
+      "type": "question",
+      "kind": "manual",
+      "text": "買賣家的證據有無編輯造假",
+      "options": [
+        {
+          "label": "證據異常轉編輯造假流程",
+          "next": "__auto_outcome_39"
+        },
+        {
+          "label": "證據無異常",
+          "next": "SOP1_Node250"
+        }
+      ]
+    },
+    "__auto_outcome_40": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "買賣家是否已有協議：已有協議（轉往其他流程 SOP79_Node2）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP79_Node2），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node250": {
+      "type": "question",
+      "kind": "manual",
+      "text": "買賣家是否已有協議",
+      "options": [
+        {
+          "label": "已有協議",
+          "next": "__auto_outcome_40"
+        },
+        {
+          "label": "未有協議",
+          "next": "SOP1_Node258"
+        }
+      ]
+    },
+    "__auto_outcome_41": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "是否為AOC RR：AOC RR（轉往其他流程 SOP89_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP89_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node251": {
+      "type": "question",
+      "kind": "manual",
+      "text": "是否為AOC RR",
+      "options": [
+        {
+          "label": "AOC RR",
+          "next": "__auto_outcome_41"
+        },
+        {
+          "label": "非AOC RR",
+          "next": "SOP1_Node252"
+        }
+      ]
+    },
+    "__auto_outcome_42": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "是否為分期訂單案件：分期訂單案件（轉往其他流程 SOP54_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP54_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node252": {
+      "type": "question",
+      "kind": "manual",
+      "text": "是否為分期訂單案件",
+      "options": [
+        {
+          "label": "分期訂單案件",
+          "next": "__auto_outcome_42"
+        },
+        {
+          "label": "非分期訂單案件",
+          "next": "SOP1_Node253"
+        }
+      ]
+    },
+    "__auto_outcome_43": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家真實爭議原因為何：未收到退貨（轉往其他流程 SOP82_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP82_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_44": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家真實爭議原因為何：商品缺件（轉往其他流程 SOP83_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP83_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_45": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家真實爭議原因為何：錯誤包裹（轉往其他流程 SOP84_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP84_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_46": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家真實爭議原因為何：商品毀損瑕疵（轉往其他流程 SOP80_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP80_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_47": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家真實爭議原因為何：例外商品（轉往其他流程 SOP85_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP85_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_48": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家真實爭議原因為何：個賣審核（轉往其他流程 SOP86_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP86_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_49": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家真實爭議原因為何：補折扣碼/運費（轉往其他流程 SOP79_Node12）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP79_Node12），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "__auto_outcome_50": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "賣家真實爭議原因為何：買家申退錯誤（轉往其他流程 SOP87_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP87_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node253": {
+      "type": "question",
+      "kind": "manual",
+      "text": "賣家真實爭議原因為何",
+      "options": [
+        {
+          "label": "未收到退貨",
+          "next": "__auto_outcome_43"
+        },
+        {
+          "label": "商品缺件",
+          "next": "__auto_outcome_44"
+        },
+        {
+          "label": "錯誤包裹",
+          "next": "__auto_outcome_45"
+        },
+        {
+          "label": "商品毀損瑕疵",
+          "next": "__auto_outcome_46"
+        },
+        {
+          "label": "例外商品",
+          "next": "__auto_outcome_47"
+        },
+        {
+          "label": "個賣審核",
+          "next": "__auto_outcome_48"
+        },
+        {
+          "label": "補折扣碼/運費",
+          "next": "__auto_outcome_49"
+        },
+        {
+          "label": "買家申退錯誤",
+          "next": "__auto_outcome_50"
+        }
+      ]
+    },
+    "__auto_outcome_51": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "是否為Review判決退款後Dispute流程 (是專員手動判決退款，非系統快速退款/自動退款)：是Review判決退款後Dispute流程（轉往其他流程 SOP103_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP103_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node254": {
+      "type": "question",
+      "kind": "manual",
+      "text": "是否為Review判決退款後Dispute流程 (是專員手動判決退款，非系統快速退款/自動退款)",
+      "options": [
+        {
+          "label": "是Review判決退款後Dispute流程",
+          "next": "__auto_outcome_51"
+        },
+        {
+          "label": "一般系統快速退款/自動退款案件",
+          "next": "SOP1_Node248"
+        }
+      ]
+    },
+    "__auto_outcome_52": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "此案件是否為環保無包裝退貨：是>>SPX特殊流程（轉往其他流程 SOP49_Node282）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP49_Node282），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node256": {
+      "type": "question",
+      "kind": "manual",
+      "text": "此案件是否為環保無包裝退貨",
+      "options": [
+        {
+          "label": "是>>SPX特殊流程",
+          "next": "__auto_outcome_52"
+        },
+        {
+          "label": "否>>爭議案件類型",
+          "next": "SOP1_Node86"
+        }
+      ]
+    },
+    "__auto_outcome_53": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "是否為自動退款：自動退款（轉往其他流程 SOP81_Node1）",
+      "note": "這條分支在正式環境會跳到另一個流程節點（SOP81_Node1），但這份匯出檔案只包含 SOP1_F116，沒有該節點資料，先當作結束點。若要完整模擬需要再匯出對應流程。"
+    },
+    "SOP1_Node258": {
+      "type": "question",
+      "kind": "manual",
+      "text": "是否為自動退款",
+      "options": [
+        {
+          "label": "自動退款",
+          "next": "__auto_outcome_53"
+        },
+        {
+          "label": "非自動退款",
+          "next": "SOP1_Node251"
+        }
+      ]
+    }
+  }
+}

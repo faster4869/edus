@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>批次匯入案件 — SOP Tool</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  textarea#jsonInput{width:100%;min-height:320px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;padding:12px;border:1px solid var(--border);border-radius:6px;}
+  .result-row{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f0f0;font-size:13px;}
+  .result-row:last-child{border-bottom:none;}
+  .result-ok{color:#389e0d;}
+  .result-fail{color:#cf1322;}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="list.html" class="logo">Shopee CS</a>
+    <span class="env-tag">練習模式</span>
+    <span class="caseid">批次匯入案件</span>
+  </div>
+
+  <div class="container">
+    <div id="msg"></div>
+
+    <div class="form-section">
+      <h3>使用方式</h3>
+      <p style="font-size:13px;line-height:1.7;color:var(--text-light);">
+        1. 貼上或上傳一個 <b>JSON 陣列</b>，裡面放多筆案件物件（結構跟「編輯案件」表單存出來的一樣）。<br>
+        2. 每筆案件必須要有唯一的 <code>id</code>，若這個 id 已存在於 Sheet 裡，會直接覆蓋更新；不存在則新增一列。<br>
+        3. 可以先下載範本看格式，用文字編輯器或程式批次產生後貼進來。
+      </p>
+      <button type="button" class="btn" onclick="downloadTemplate()">⬇ 下載範本 JSON（含 chatHistory / discuss / images 範例）</button>
+    </div>
+
+    <div class="form-section">
+      <h3>上傳 / 貼上 JSON</h3>
+      <input type="file" id="fileInput" accept=".json" style="margin-bottom:10px;">
+      <textarea id="jsonInput" placeholder='[
+  { "id": "TRAIN-001", "title": "...", ... },
+  { "id": "TRAIN-002", "title": "...", ... }
+]'></textarea>
+      <div style="margin-top:12px;display:flex;gap:10px;">
+        <button class="btn-primary" onclick="startImport()">開始匯入</button>
+        <a href="list.html" class="btn">回案件清單</a>
+      </div>
+    </div>
+
+    <div class="form-section" id="resultBox" style="display:none;">
+      <h3>匯入結果</h3>
+      <div id="resultList"></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const TEMPLATE_DATA = [
+      {
+        "id": "TRAIN-001",
+        "title": "範例：買家收到商品有瑕疵，要求退貨退款",
+        "orderId": "999000111222",
+        "orderSn": "TRAIN0001",
+        "returnSn": "TRAIN-RTN-0001",
+        "status": "New",
+        "returnStatus": "Judging",
+        "difficulty": "初階",
+        "summary": {
+          "caseUpdate": "7/1: 買家申請退貨退款，理由為商品有瑕疵。\n7/1: 系統已通知賣家提供舉證。",
+          "lastAgentNotes": "-",
+          "requestType": "Buyer Request",
+          "noOfRR": "1 RR",
+          "forwardLogisticsStatus": "Delivered",
+          "rrRaisedTiming": "After delivery done",
+          "buyerCategory": "Low Risk - Normal Buyer",
+          "sellerCategory": "Low Risk - Normal Seller",
+          "buyerEvidence": "已上傳3張商品瑕疵照片",
+          "returnReason": "Item defective / doesn't work",
+          "ai": {
+            "evidenceValidation": "Evidence provided, needs review",
+            "realReturnReason": "Item defective / doesn't work",
+            "agreement": "No agreement"
+          }
+        },
+        "generalInfo": {
+          "Return Status": "Judging",
+          "Return ID": "TRAIN-RTN-0001",
+          "Order ID": "999000111222",
+          "Case Status": "New",
+          "Buyer Proof Status": "Proof provided",
+          "Seller Proof Status": "Pending proof"
+        },
+        "forwardLogistics": {
+          "fields": { "Ship To Name": "***", "Forward Logistic Type": "Integrated", "Forward Logistics Status": "Delivered" },
+          "parcels": [ { "parcelNo": "Forward Parcel 1", "tracking": "TRAINTRACK001", "carrier": "范例物流", "otp": "No" } ]
+        },
+        "reverseLogistics": {
+          "fields": { "Reverse Logistics Status": "Not Started" },
+          "parcels": []
+        },
+        "timeline": [
+          { "title": "Order created", "time": "2026-06-25 10:00", "state": "done" },
+          { "title": "Order paid", "time": "2026-06-25 10:05", "state": "done" },
+          { "title": "Delivered", "time": "2026-06-29 15:30", "state": "done" },
+          { "title": "RR Requested", "time": "2026-07-01 09:00", "state": "done" },
+          { "title": "Judging", "time": "2026-07-01 09:00", "state": "active" },
+          { "title": "Est. Escrow Release", "time": "2026-07-10 09:00", "state": "pending" }
+        ],
+        "buyerReturnInfo": {
+          "fields": {
+            "Request Proposal": "Refund and Return | Refund Amount: $1,200",
+            "Return Reason": "Item defective / doesn't work"
+          },
+          "images": [
+            "https://cf.shopee.tw/file/tw-11134207-example-thumbnail1",
+            "https://cf.shopee.tw/file/tw-11134207-example-thumbnail2"
+          ]
+        },
+        "sellerDispute": {
+          "fields": {
+            "Counter Proposal": "-",
+            "Dispute Reason": "拆封毀損",
+            "Dispute Reason Remark": "商品拆封後有明顯刮痕"
+          },
+          "images": [
+            "https://cf.shopee.tw/file/tw-11134207-example-thumbnail3"
+          ]
+        },
+        "buyerInfo": { "Buyer Username": "training_buyer01", "Buyer User ID": "0000001", "Buyer Category": "Low Risk - Normal Buyer" },
+        "sellerInfo": { "Shop Name": "範例賣場", "Shop ID": "0000002", "Seller Category": "Low Risk - Normal Seller" },
+        "productInfo": {
+          "items": [ { "product": "範例商品 - 藍牙耳機", "returnableStatus": "Returnable", "modelId": "MODEL001", "unitPrice": "$1,200", "qty": "1" } ]
+        },
+        "paymentInfo": {
+          "transactionId": "TXN-TRAIN-0001",
+          "buyer": { "Item Price": "$1,200", "Grand Total": "$1,200" },
+          "seller": { "Product Price": "$1,200", "Actual Escrow Amount": "$1,080" }
+        },
+        "operationHistory": [
+          { "role": "buyer", "name": "training_buyer01", "time": "2026-07-01 09:00", "title": "Request Return/Refund", "detail": "Refund Amount: $1,200\nReturn Reason: Item defective" }
+        ],
+        "chatHistory": [
+          { "role": "buyer", "name": "training_buyer01", "time": "09:02", "text": "你好，我收到的耳機左邊完全沒有聲音，可以幫我退貨退款嗎？" },
+          { "role": "system", "text": "系統已將此對話轉接至客服" },
+          { "role": "cs", "name": "自己", "time": "09:05", "text": "您好，造成不便很抱歉，麻煩您上傳商品瑕疵的照片或影片，我們會盡快協助處理。" },
+          { "role": "buyer", "name": "training_buyer01", "time": "09:08", "text": "好的，我剛剛已經上傳3張照片了" }
+        ],
+        "discuss": [
+          { "name": "Sherry（主管）", "time": "2026-07-01 10:00", "text": "這筆買家提供的照片角度看不太出來瑕疵位置，建議再跟賣家要求提供出貨前的品檢紀錄一併比對，避免誤判。" }
+        ]
+      }
+    ];
+
+    function downloadTemplate(){
+      const blob = new Blob([JSON.stringify(TEMPLATE_DATA, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'template_example.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function esc(s){ return (s===undefined||s===null)?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    document.getElementById('fileInput').addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { document.getElementById('jsonInput').value = reader.result; };
+      reader.readAsText(file);
+    });
+
+    function showMsg(type, text){
+      document.getElementById('msg').innerHTML = `<div class="msg ${type}">${esc(text)}</div>`;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    async function startImport(){
+      const raw = document.getElementById('jsonInput').value.trim();
+      if(!raw){ showMsg('error','請先貼上或上傳 JSON 內容。'); return; }
+
+      let cases;
+      try{
+        cases = JSON.parse(raw);
+        if(!Array.isArray(cases)) throw new Error('最外層必須是陣列 [ ... ]');
+      }catch(err){
+        showMsg('error','JSON 格式錯誤：' + err.message);
+        return;
+      }
+      if(!cases.length){ showMsg('error','陣列是空的，沒有東西可以匯入。'); return; }
+
+      const missingId = cases.findIndex(c => !c.id);
+      if(missingId !== -1){
+        showMsg('error',`第 ${missingId+1} 筆案件沒有 id，請補上後再匯入。`);
+        return;
+      }
+
+      showMsg('success', `開始匯入 ${cases.length} 筆案件，請稍候...`);
+      const results = [];
+
+      for(const c of cases){
+        try{
+          const res = await fetch(API_URL, { method:'POST', body: JSON.stringify(c) });
+          const r = await res.json();
+          results.push({ id:c.id, ok: !r.error, info: r.error || r.mode });
+        }catch(err){
+          results.push({ id:c.id, ok:false, info: err.message || String(err) });
+        }
+      }
+
+      const okCount = results.filter(r=>r.ok).length;
+      showMsg(okCount===results.length?'success':'error',
+        `匯入完成：成功 ${okCount} / ${results.length} 筆。`);
+
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      document.getElementById('resultList').innerHTML = results.map(r => `
+        <div class="result-row">
+          <span>${esc(r.id)}</span>
+          <span class="${r.ok?'result-ok':'result-fail'}">${r.ok ? '✅ ' + esc(r.info) : '❌ ' + esc(r.info)}</span>
+        </div>`).join('');
+    }
+  </script>
+</body>
+</html>

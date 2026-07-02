@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>SOP 流程設定 — SOP Tool</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  textarea#jsonInput{width:100%;min-height:420px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;padding:12px;border:1px solid var(--border);border-radius:6px;}
+  .preview-box{background:#fff;border:1px solid var(--border);border-radius:6px;padding:16px;max-width:420px;max-height:520px;overflow-y:auto;}
+
+  .sop-card{border-bottom:1px solid #f0f0f0;}
+  .sop-card:last-child{border-bottom:none;}
+  .sop-card-header{display:flex;align-items:center;gap:8px;padding:12px 2px;cursor:pointer;}
+  .sop-card.active .sop-card-header{cursor:default;}
+  .sop-check{width:18px;height:18px;border-radius:50%;background:#52c41a;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sop-check.pending{background:#fff;border:2px solid #ffbb38;}
+  .sop-icon{flex-shrink:0;font-size:13px;}
+  .sop-q{flex:1;min-width:0;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sop-q.wrap{white-space:normal;font-weight:600;}
+  .sop-arrow{color:#ccc;font-size:12px;flex-shrink:0;}
+  .sop-a{color:var(--text-light);font-size:12.5px;flex-shrink:0;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sop-chev{color:#ccc;font-size:11px;flex-shrink:0;width:14px;text-align:center;}
+  .sop-card-body{padding:0 4px 16px 40px;}
+  .sop-note{font-size:12.5px;color:var(--text-light);white-space:pre-line;margin-bottom:10px;line-height:1.6;}
+  .sop-options{display:flex;flex-direction:column;gap:8px;}
+  .sop-radio{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;}
+  .sop-radio.disabled{cursor:default;color:var(--text-light);}
+  .sop-radio input[type=radio]{accent-color:#ee4d2d;}
+  .sop-footer{font-size:11px;color:#bbb;margin-top:10px;}
+  .sop-result{font-size:14px;font-weight:600;margin:6px 0;}
+  .sop-result.ok{color:#389e0d;}
+  .sop-result.bad{color:#cf1322;}
+  .sop-end .sop-q{color:var(--text-light);font-weight:400;}
+  .sop-link{font-size:12px;color:#2673dd;text-decoration:none;margin-left:4px;font-weight:400;}
+  .sop-action-btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;}
+  .sop-action-btn:hover{background:var(--primary-dark);}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="list.html" class="logo">Shopee CS</a>
+    <span class="env-tag">練習模式</span>
+    <span class="caseid">SOP 流程設定</span>
+  </div>
+
+  <div class="container">
+    <div id="msg"></div>
+
+    <div class="form-section">
+      <h3>這是什麼</h3>
+      <p style="font-size:13px;line-height:1.7;color:var(--text-light);">
+        這份 SOP 流程是<b>全部練習案件共用同一份</b>，會顯示在練習畫面右側「SOP」分頁。<br>
+        內容請自行依照公司內部實際的 SOP 判斷邏輯填寫——這個工具只負責把你輸入的流程跑起來，不會幫你生成或假設任何判斷內容。<br>
+        流程走完會顯示「正確處理 / 不符合SOP」加上你走過的完整路徑，讓學員自己核對。<br>
+        <b>這份資料是靜態檔案（`sop_flow.json`），不是存在 Google Sheet 裡</b>——因為完整的 SOP 流程節點數很多，會超過 Sheet 單一儲存格 5 萬字元的上限。設定好之後用下方「下載」拿到檔案，手動放到跟 <code>detail.html</code> 同一個資料夾（GitHub repo 根目錄）再推上去就行。<br>
+        如果你有一大批（例如 60 幾個）正式環境匯出的檔案要合併，不用一個個貼上來這裡手動處理，直接用附的 <code>merge_sop_flows.py</code> 在自己電腦上跑（`python3 merge_sop_flows.py --input-dir 你的資料夾 --output sop_flow.json`），跑完就直接是可以用的 `sop_flow.json`，可以拿那個檔案用下面的「上傳檔案」按鈕載入來預覽確認。
+      </p>
+      <button type="button" class="btn" onclick="loadTemplateExample()">載入格式範例（僅示範結構，非真實SOP，記得改成你自己的內容）</button>
+    </div>
+
+    <div class="form-section">
+      <h3>JSON 結構說明</h3>
+      <p style="font-size:12.5px;line-height:1.8;color:var(--text-light);">
+        <code>startNode</code>：流程起始節點的名稱。<br>
+        <code>nodes</code>：所有節點，key 是節點名稱（自訂，例如 q1、q2），value 是節點內容：<br>
+        　－ 問題節點：<code>{ "type": "question", "kind": "system 或 manual", "text": "問題文字", "note": "提示/補充文字（選填，換行用 \n）", "link": { "label": "講義", "url": "https://..." }（選填）, "options": [{ "label": "選項文字", "next": "下一個節點名稱" }, ...] }</code><br>
+        　　　· <code>kind</code> 決定顯示 🖥️ 系統圖示還是 👤 人工圖示，不填預設當作 manual<br>
+        　　　· <code>options</code> 只有一個選項時，會自動顯示成一個醒目的大按鈕（適合模擬「Judge」這種動作按鈕），不會顯示成單選題<br>
+        　－ 結論節點：<code>{ "type": "outcome", "result": "correct 或 incorrect", "text": "結論文字", "note": "補充說明（選填）" }</code>
+      </p>
+    </div>
+
+    <div class="form-section">
+      <h3>編輯流程 JSON</h3>
+      <input type="file" id="fileInput" accept=".json" style="margin-bottom:10px;">
+      <textarea id="jsonInput"></textarea>
+      <div style="margin-top:12px;display:flex;gap:10px;">
+        <button class="btn" onclick="previewFlow()">▶ 預覽</button>
+        <button class="btn-primary" onclick="downloadFlow()">⬇ 下載 sop_flow.json</button>
+        <a href="list.html" class="btn">回案件清單</a>
+      </div>
+    </div>
+
+    <div class="form-section" id="previewSection" style="display:none;">
+      <h3>預覽</h3>
+      <p style="font-size:12.5px;color:var(--text-light);margin-top:-6px;">這裡跑的是你上面文字框目前的內容，還沒儲存也可以先測試。</p>
+      <div class="preview-box" id="previewPane"></div>
+    </div>
+  </div>
+
+  <script>
+    function esc(s){ return (s===undefined||s===null)?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function showMsg(type, text){
+      document.getElementById('msg').innerHTML = `<div class="msg ${type}">${esc(text)}</div>`;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    const TEMPLATE_EXAMPLE = {
+      title: "範例流程（請替換成真實SOP）",
+      startNode: "q1",
+      nodes: {
+        q1: {
+          type: "question",
+          kind: "system",
+          text: "(系統判讀)案件類型",
+          options: [
+            { label: "Review", next: "q2" },
+            { label: "Dispute", next: "q3" }
+          ]
+        },
+        q2: {
+          type: "question",
+          kind: "manual",
+          text: "買家是否已提供退貨舉證（照片/影片）？",
+          note: "提醾：僅接受清楚可辨識瑕疵位置的照片或影片，模糊/角度不明的證據視為不足。",
+          link: { label: "舉證判定講義", url: "https://example.com/handbook" },
+          options: [
+            { label: "是，且證據充分", next: "act_judge" },
+            { label: "否，或證據不足", next: "out_need_evidence" }
+          ]
+        },
+        q3: {
+          type: "question",
+          kind: "manual",
+          text: "商品品項是否與訂單相符？",
+          options: [
+            { label: "相符", next: "out_approve" },
+            { label: "不符", next: "out_reject" }
+          ]
+        },
+        act_judge: {
+          type: "question",
+          kind: "manual",
+          text: "確認以上資訊無誤，送出判決",
+          options: [
+            { label: "Judge", next: "out_approve" }
+          ]
+        },
+        out_need_evidence: {
+          type: "outcome",
+          result: "incorrect",
+          text: "應先請買家補充證據，不應直接判定",
+          note: "證據不足時不能直接核准或駁回，需先發送補件通知"
+        },
+        out_approve: {
+          type: "outcome",
+          result: "correct",
+          text: "核准退款退貨",
+          note: ""
+        },
+        out_reject: {
+          type: "outcome",
+          result: "correct",
+          text: "駁回退款申請（商品不符）",
+          note: ""
+        }
+      }
+    };
+
+    function loadTemplateExample(){
+      document.getElementById('jsonInput').value = JSON.stringify(TEMPLATE_EXAMPLE, null, 2);
+      showMsg('success','已載入格式範例，記得改成你們真實的 SOP 內容再儲存。');
+    }
+
+    document.getElementById('fileInput').addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('jsonInput').value = reader.result;
+        showMsg('success', '已載入檔案「' + file.name + '」，可以按「▶ 預覽」確認內容。');
+      };
+      reader.readAsText(file);
+    });
+
+    async function loadCurrent(){
+      try{
+        const res = await fetch('sop_flow.json');
+        if(!res.ok) throw new Error('找不到 sop_flow.json');
+        const data = await res.json();
+        document.getElementById('jsonInput').value = JSON.stringify(data, null, 2);
+        showMsg('success', '已載入目前資料夾裡的 sop_flow.json。');
+      }catch(err){
+        showMsg('error','目前這個資料夾還沒有 sop_flow.json，可以先點「載入格式範例」參考格式，或用上面「上傳檔案」載入你自己準備好的檔案。');
+      }
+    }
+
+    function parseFlow(){
+      const raw = document.getElementById('jsonInput').value.trim();
+      if(!raw) throw new Error('內容是空的');
+      const flow = JSON.parse(raw);
+      if(!flow.startNode || !flow.nodes) throw new Error('缺少 startNode 或 nodes');
+      if(!flow.nodes[flow.startNode]) throw new Error('startNode 指定的節點「' + flow.startNode + '」不存在於 nodes 裡');
+      return flow;
+    }
+
+    let previewFlowData = null;
+    let previewHistory = [];
+    let previewCurrentNode = null;
+
+    function previewFlow(){
+      let flow;
+      try{
+        flow = parseFlow();
+      }catch(err){
+        showMsg('error','JSON 格式錯誤：' + err.message);
+        return;
+      }
+      showMsg('success','JSON 格式沒問題，下方可以實際跑一次流程。');
+      previewFlowData = flow;
+      previewHistory = [];
+      previewCurrentNode = flow.startNode;
+      document.getElementById('previewSection').style.display = 'block';
+      renderPreviewAccordion();
+    }
+
+    function nowStr(){
+      const d = new Date();
+      const p = n => String(n).padStart(2,'0');
+      return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+    }
+
+    function renderPreviewAccordion(){
+      const el = document.getElementById('previewPane');
+      let html = '';
+
+      previewHistory.forEach((h, idx) => {
+        const icon = h.kind === 'system' ? '🖥️' : '👤';
+        html += `<div class="sop-card">
+          <div class="sop-card-header" onclick="togglePreviewHistory(${idx})">
+            <span class="sop-check">✓</span>
+            <span class="sop-icon">${icon}</span>
+            <span class="sop-q">${esc(h.text)}</span>
+            <span class="sop-arrow">→</span>
+            <span class="sop-a">${esc(h.chosenLabel)}</span>
+            <span class="sop-chev">${h.expanded ? '︿' : '﹀'}</span>
+          </div>`;
+        if(h.expanded){
+          html += `<div class="sop-card-body">
+            <div class="sop-options">
+              ${h.options.map((o,i)=>`
+                <label class="sop-radio disabled">
+                  <input type="radio" disabled ${i===h.chosenIndex?'checked':''}>
+                  <span>${esc(o.label)}</span>
+                </label>`).join('')}
+            </div>
+            <div class="sop-footer">預覽紀錄・${esc(h.timestamp)}</div>
+          </div>`;
+        }
+        html += `</div>`;
+      });
+
+      if(previewCurrentNode){
+        const node = previewFlowData.nodes[previewCurrentNode];
+        if(!node){
+          html += `<div class="sop-card"><div class="sop-card-header"><span class="sop-q wrap" style="color:#cf1322;">找不到節點「${esc(previewCurrentNode)}」</span></div></div>`;
+        } else if(node.type === 'outcome'){
+          const isCorrect = node.result === 'correct';
+          html += `<div class="sop-card active">
+            <div class="sop-card-header">
+              <span class="sop-check">✓</span>
+              <span class="sop-icon">🏁</span>
+              <span class="sop-q wrap">${esc(node.text)}</span>
+            </div>
+            <div class="sop-card-body">
+              ${node.note ? `<div class="sop-note">${esc(node.note)}</div>` : ''}
+              <div class="sop-result ${isCorrect?'ok':'bad'}">${isCorrect ? '✅ 正確處理' : '❌ 不符合 SOP'}</div>
+            </div>
+          </div>
+          <div class="sop-card sop-end"><div class="sop-card-header"><span class="sop-q">End</span></div></div>
+          <div style="text-align:center;margin-top:14px;"><button class="btn" onclick="restartPreview()">🔄 重新開始預覽</button></div>`;
+        } else {
+          const icon = node.kind === 'system' ? '🖥️' : '👤';
+          const isAction = (node.options||[]).length === 1;
+          html += `<div class="sop-card active">
+            <div class="sop-card-header">
+              <span class="sop-check pending"></span>
+              <span class="sop-icon">${icon}</span>
+              <span class="sop-q wrap">${esc(node.text)}${node.link ? ` <a class="sop-link" href="${esc(node.link.url)}" target="_blank" onclick="event.stopPropagation()">📖 ${esc(node.link.label||'參考')}</a>` : ''}</span>
+            </div>
+            <div class="sop-card-body">
+              ${node.note ? `<div class="sop-note">${esc(node.note).replace(/\n/g,'<br>')}</div>` : ''}
+              ${isAction
+                ? `<button class="sop-action-btn" onclick="choosePreviewOption(0)">${esc(node.options[0].label)}</button>`
+                : `<div class="sop-options">
+                    ${(node.options||[]).map((o,i)=>`
+                      <label class="sop-radio">
+                        <input type="radio" name="previewOpt" onclick="choosePreviewOption(${i})">
+                        <span>${esc(o.label)}</span>
+                      </label>`).join('')}
+                  </div>`}
+            </div>
+          </div>`;
+        }
+      }
+
+      el.innerHTML = html;
+      requestAnimationFrame(()=>{ el.scrollTop = el.scrollHeight; });
+    }
+
+    function togglePreviewHistory(idx){
+      previewHistory[idx].expanded = !previewHistory[idx].expanded;
+      renderPreviewAccordion();
+    }
+
+    function choosePreviewOption(i){
+      const node = previewFlowData.nodes[previewCurrentNode];
+      const opt = node.options[i];
+      previewHistory.push({
+        kind: node.kind || 'manual',
+        text: node.text,
+        options: node.options,
+        chosenIndex: i,
+        chosenLabel: opt.label,
+        timestamp: nowStr(),
+        expanded: false
+      });
+      previewCurrentNode = opt.next;
+      renderPreviewAccordion();
+    }
+
+    function restartPreview(){
+      previewHistory = [];
+      previewCurrentNode = previewFlowData.startNode;
+      renderPreviewAccordion();
+    }
+
+    function downloadFlow(){
+      let flow;
+      try{
+        flow = parseFlow();
+      }catch(err){
+        showMsg('error','JSON 格式錯誤，無法下載：' + err.message);
+        return;
+      }
+      const blob = new Blob([JSON.stringify(flow, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'sop_flow.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showMsg('success','已下載 sop_flow.json，記得把它放到跟 detail.html 同一個資料夾，然後推上 GitHub。');
+    }
+
+    loadCurrent();
+  </script>
+</body>
+</html>

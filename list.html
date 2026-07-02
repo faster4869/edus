@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>練習案件清單 — SOP Tool</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="topbar">
+    <a href="list.html" class="logo">Shopee CS</a>
+    <span class="env-tag">練習模式</span>
+  </div>
+
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0 16px;">
+      <h2 style="margin:0;font-size:20px;">練習案件清單</h2>
+      <div style="display:flex;gap:8px;">
+        <a href="sop-editor.html" class="btn" style="text-decoration:none;">⚙ SOP 流程設定</a>
+        <a href="import.html" class="btn" style="text-decoration:none;">⬆ 批次匯入</a>
+        <a href="edit.html" class="btn-primary" style="text-decoration:none;">＋ 新增練習案件</a>
+      </div>
+    </div>
+
+    <div id="msg"></div>
+    <div id="list">載入中...</div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    function esc(s){ return (s===undefined||s===null)?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    async function load(){
+      const listEl = document.getElementById('list');
+      const msgEl = document.getElementById('msg');
+      try{
+        const res = await fetch(API_URL + '?action=list');
+        const data = await res.json();
+        if(data.error){ throw new Error(data.error); }
+        if(!data.length){
+          listEl.innerHTML = '<p style="color:var(--text-light);">目前沒有練習案件，點右上角「＋ 新增練習案件」建立第一筆。</p>';
+          return;
+        }
+        listEl.innerHTML = data.map(c => `
+          <div class="case-card">
+            <div>
+              <div class="case-title">${esc(c.title) || '（未命名案件）'}</div>
+              <div class="case-meta">
+                Return ID: ${esc(c.id)} ｜ Order ID: ${esc(c.orderId) || '-'}
+                ｜ 狀態: ${esc(c.status) || '-'}
+                ${c.difficulty ? ('｜ 難度: ' + esc(c.difficulty)) : ''}
+              </div>
+            </div>
+            <div class="case-actions">
+              <a class="btn-outline" href="detail.html?id=${encodeURIComponent(c.id)}">開始練習</a>
+              <a class="btn" href="edit.html?id=${encodeURIComponent(c.id)}">編輯</a>
+            </div>
+          </div>
+        `).join('');
+      }catch(err){
+        msgEl.innerHTML = '<div class="msg error">讀取失敗，請確認 config.js 內的 API_URL 是否已換成你部署好的 Apps Script 網址。<br>錯誤訊息：' + esc(err.message || err) + '</div>';
+        listEl.innerHTML = '';
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>新增/編輯練習案件 — SOP Tool</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="topbar">
+    <a href="list.html" class="logo">Shopee CS</a>
+    <span class="env-tag">練習模式</span>
+    <span class="caseid" id="modeLabel">新增練習案件</span>
+  </div>
+
+  <div class="container">
+    <div id="msg"></div>
+
+    <div class="form-section">
+      <h3>基本資訊</h3>
+      <div class="form-grid2">
+        <div class="form-row"><label>案件編號 id（唯一值，必填；新增後不可改）</label><input id="f_id"></div>
+        <div class="form-row"><label>案件標題（顯示在清單上，供學員辨識情境）</label><input id="f_title" placeholder="例：買家反映包裹未送達"></div>
+        <div class="form-row"><label>Order ID</label><input id="f_orderId"></div>
+        <div class="form-row"><label>Order SN</label><input id="f_orderSn"></div>
+        <div class="form-row"><label>Return SN</label><input id="f_returnSn"></div>
+        <div class="form-row"><label>Case Status</label><input id="f_status" placeholder="例：New"></div>
+        <div class="form-row"><label>Return Status</label><input id="f_returnStatus" placeholder="例：Judging"></div>
+        <div class="form-row"><label>難度標籤（選填）</label><input id="f_difficulty" placeholder="例：初階 / 進階"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Case Summary</h3>
+      <div class="form-row"><label>Case Update（可換行）</label><textarea id="s_caseUpdate"></textarea></div>
+      <div class="form-grid2">
+        <div class="form-row"><label>Last Agent's Notes</label><input id="s_lastAgentNotes"></div>
+        <div class="form-row"><label>Request Type</label><input id="s_requestType"></div>
+        <div class="form-row"><label>No of RR Raised</label><input id="s_noOfRR"></div>
+        <div class="form-row"><label>Forward Logistics Status</label><input id="s_forwardLogisticsStatus"></div>
+        <div class="form-row"><label>RR Raised 時機</label><input id="s_rrRaisedTiming"></div>
+        <div class="form-row"><label>Buyer Category</label><input id="s_buyerCategory"></div>
+        <div class="form-row"><label>Seller Category</label><input id="s_sellerCategory"></div>
+        <div class="form-row"><label>Buyer Evidence</label><input id="s_buyerEvidence"></div>
+        <div class="form-row"><label>Return Reason</label><input id="s_returnReason"></div>
+      </div>
+      <div class="form-row"><label>✨ AI - Evidence Validation</label><input id="s_aiEvidence"></div>
+      <div class="form-row"><label>✨ AI - Real Return Reason</label><input id="s_aiRealReason"></div>
+      <div class="form-row"><label>✨ AI - Buyer/Seller Agreement</label><input id="s_aiAgreement"></div>
+    </div>
+
+    <div class="form-section">
+      <h3>General Info（自由欄位）</h3>
+      <div class="kv-editor" id="kv-generalInfo"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-generalInfo')">＋ 新增欄位</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Forward Logistics Info</h3>
+      <p style="font-size:12.5px;color:var(--text-light);margin-top:-6px;">基本欄位</p>
+      <div class="kv-editor" id="kv-fwdFields"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-fwdFields')">＋ 新增欄位</button>
+      <p style="font-size:12.5px;color:var(--text-light);margin:14px 0 -2px;">包裹清單（Parcel No. / Tracking / Carrier / OTP）</p>
+      <div id="list-fwdParcels"></div>
+      <button type="button" class="add-row-btn" onclick="addFwdParcelRow()">＋ 新增包裹</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Reverse Logistics Info</h3>
+      <p style="font-size:12.5px;color:var(--text-light);margin-top:-6px;">基本欄位</p>
+      <div class="kv-editor" id="kv-rvsFields"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-rvsFields')">＋ 新增欄位</button>
+      <p style="font-size:12.5px;color:var(--text-light);margin:14px 0 -2px;">退貨包裹清單（Tracking / Carrier / ePOD / ePOP）</p>
+      <div id="list-rvsParcels"></div>
+      <button type="button" class="add-row-btn" onclick="addRvsParcelRow()">＋ 新增包裹</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Timeline</h3>
+      <div id="list-timeline"></div>
+      <button type="button" class="add-row-btn" onclick="addTimelineRow()">＋ 新增時間節點</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Buyer Return Info</h3>
+      <div class="kv-editor" id="kv-buyerReturn"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-buyerReturn')">＋ 新增欄位</button>
+      <div class="form-row" style="margin-top:14px;">
+        <label>圖片/影片網址（每行貼一個網址，練習畫面會轉成縮圖，點擊可放大）</label>
+        <textarea id="img-buyerReturn" oninput="previewImages('img-buyerReturn','preview-buyerReturn')" placeholder="https://cf.shopee.tw/file/xxxxx"></textarea>
+        <div class="img-preview" id="preview-buyerReturn"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Seller 1st Dispute</h3>
+      <div class="kv-editor" id="kv-sellerDispute"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-sellerDispute')">＋ 新增欄位</button>
+      <div class="form-row" style="margin-top:14px;">
+        <label>圖片/影片網址（每行貼一個網址，練習畫面會轉成縮圖，點擊可放大）</label>
+        <textarea id="img-sellerDispute" oninput="previewImages('img-sellerDispute','preview-sellerDispute')" placeholder="https://cf.shopee.tw/file/xxxxx"></textarea>
+        <div class="img-preview" id="preview-sellerDispute"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Buyer Info</h3>
+      <div class="kv-editor" id="kv-buyerInfo"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-buyerInfo')">＋ 新增欄位</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Seller Info</h3>
+      <div class="kv-editor" id="kv-sellerInfo"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-sellerInfo')">＋ 新增欄位</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Product Info</h3>
+      <div id="list-products"></div>
+      <button type="button" class="add-row-btn" onclick="addProductRow()">＋ 新增商品</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Payment Info</h3>
+      <div class="form-row"><label>Transaction ID</label><input id="pay_txnId"></div>
+      <p style="font-size:12.5px;color:var(--text-light);">Buyer Payment</p>
+      <div class="kv-editor" id="kv-payBuyer"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-payBuyer')">＋ 新增欄位</button>
+      <p style="font-size:12.5px;color:var(--text-light);margin-top:14px;">Seller Income</p>
+      <div class="kv-editor" id="kv-paySeller"></div>
+      <button type="button" class="add-row-btn" onclick="addKVRow('kv-paySeller')">＋ 新增欄位</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Operation History</h3>
+      <div id="list-oph"></div>
+      <button type="button" class="add-row-btn" onclick="addOphRow()">＋ 新增操作紀錄</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Chat History（模擬買賣家對話，供學員判讀）</h3>
+      <p style="font-size:12.5px;color:var(--text-light);margin-top:-6px;">角色選「系統」時會置中顯示為系統訊息；選「客服」會靠右顯示（模擬自己的回覆）。</p>
+      <div id="list-chat"></div>
+      <button type="button" class="add-row-btn" onclick="addChatRow()">＋ 新增對話</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Discuss（模擬客服內部討論筆記）</h3>
+      <div id="list-discuss"></div>
+      <button type="button" class="add-row-btn" onclick="addDiscussRow()">＋ 新增討論</button>
+    </div>
+
+    <div style="display:flex;gap:10px;margin:24px 0 60px;">
+      <button class="btn-primary" onclick="save()">儲存</button>
+      <a href="list.html" class="btn">取消</a>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    function esc(s){ return (s===undefined||s===null)?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function escAttr(s){ return esc(s).replace(/"/g,'&quot;'); }
+
+    // ---------- 通用 KV 編輯器 ----------
+    function addKVRow(containerId, k, v){
+      const el = document.getElementById(containerId);
+      const row = document.createElement('div');
+      row.className = 'kv-row';
+      row.innerHTML = `<input class="kv-key" placeholder="欄位名稱" value="${escAttr(k||'')}">
+        <input class="kv-val" placeholder="值" value="${escAttr(v||'')}">
+        <button type="button" onclick="this.parentElement.remove()">✕</button>`;
+      el.appendChild(row);
+    }
+    function getKV(containerId){
+      const obj = {};
+      document.querySelectorAll('#'+containerId+' .kv-row').forEach(r=>{
+        const k = r.querySelector('.kv-key').value.trim();
+        const v = r.querySelector('.kv-val').value;
+        if(k) obj[k] = v;
+      });
+      return obj;
+    }
+    function fillKV(containerId, obj){
+      document.getElementById(containerId).innerHTML = '';
+      Object.entries(obj||{}).forEach(([k,v])=>addKVRow(containerId,k,v));
+    }
+
+    // ---------- 圖片/影片網址（一行一個） ----------
+    function previewImages(textareaId, previewId){
+      const urls = document.getElementById(textareaId).value.split('\n').map(s=>s.trim()).filter(Boolean);
+      document.getElementById(previewId).innerHTML = urls.map(u=>`<img src="${escAttr(u)}" onerror="this.style.opacity=0.3">`).join('');
+    }
+    function getImages(textareaId){
+      return document.getElementById(textareaId).value.split('\n').map(s=>s.trim()).filter(Boolean);
+    }
+    function setImages(textareaId, arr){
+      document.getElementById(textareaId).value = (arr||[]).join('\n');
+      previewImages(textareaId, textareaId.replace('img-','preview-'));
+    }
+
+    // ---------- Forward / Reverse 包裹清單 ----------
+    function addFwdParcelRow(p){
+      p = p || {};
+      const el = document.getElementById('list-fwdParcels');
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `
+        <input class="p-parcelNo" placeholder="Parcel No." value="${escAttr(p.parcelNo)}">
+        <input class="p-tracking" placeholder="Tracking Number" value="${escAttr(p.tracking)}">
+        <input class="p-carrier" placeholder="Carrier" value="${escAttr(p.carrier)}">
+        <input class="p-otp" placeholder="OTP" value="${escAttr(p.otp)}">
+        <button type="button" onclick="this.parentElement.remove()">✕</button>`;
+      el.appendChild(row);
+    }
+    function getFwdParcels(){
+      return [...document.querySelectorAll('#list-fwdParcels .list-row')].map(r=>({
+        parcelNo:r.querySelector('.p-parcelNo').value, tracking:r.querySelector('.p-tracking').value,
+        carrier:r.querySelector('.p-carrier').value, otp:r.querySelector('.p-otp').value
+      })).filter(p=>p.parcelNo||p.tracking);
+    }
+    function addRvsParcelRow(p){
+      p = p || {};
+      const el = document.getElementById('list-rvsParcels');
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `
+        <input class="r-tracking" placeholder="Return Tracking Number" value="${escAttr(p.tracking)}">
+        <input class="r-carrier" placeholder="Carrier" value="${escAttr(p.carrier)}">
+        <input class="r-epod" placeholder="ePOD" value="${escAttr(p.epod)}">
+        <input class="r-epop" placeholder="ePOP" value="${escAttr(p.epop)}">
+        <button type="button" onclick="this.parentElement.remove()">✕</button>`;
+      el.appendChild(row);
+    }
+    function getRvsParcels(){
+      return [...document.querySelectorAll('#list-rvsParcels .list-row')].map(r=>({
+        tracking:r.querySelector('.r-tracking').value, carrier:r.querySelector('.r-carrier').value,
+        epod:r.querySelector('.r-epod').value, epop:r.querySelector('.r-epop').value
+      })).filter(p=>p.tracking);
+    }
+
+    // ---------- Timeline ----------
+    function addTimelineRow(t){
+      t = t || {};
+      const el = document.getElementById('list-timeline');
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `
+        <input class="tl-title" placeholder="標題 例：Order paid time" value="${escAttr(t.title)}">
+        <input class="tl-time" placeholder="時間 例：2026-07-02 11:36 +0800" value="${escAttr(t.time)}">
+        <select class="tl-state">
+          <option value="pending">尚未發生 (pending)</option>
+          <option value="done">已完成 (done)</option>
+          <option value="active">目前狀態 (active)</option>
+        </select>
+        <button type="button" onclick="this.parentElement.remove()">✕</button>`;
+      el.appendChild(row);
+      if(t.state) row.querySelector('.tl-state').value = t.state;
+    }
+    function getTimeline(){
+      return [...document.querySelectorAll('#list-timeline .list-row')].map(r=>({
+        title:r.querySelector('.tl-title').value, time:r.querySelector('.tl-time').value,
+        state:r.querySelector('.tl-state').value
+      })).filter(t=>t.title);
+    }
+
+    // ---------- Product Items ----------
+    function addProductRow(p){
+      p = p || {};
+      const el = document.getElementById('list-products');
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `
+        <input class="pr-product" placeholder="商品名稱" value="${escAttr(p.product)}" style="flex:2;">
+        <input class="pr-status" placeholder="Returnable Status" value="${escAttr(p.returnableStatus)}">
+        <input class="pr-model" placeholder="Model ID" value="${escAttr(p.modelId)}">
+        <input class="pr-price" placeholder="Unit Price" value="${escAttr(p.unitPrice)}">
+        <input class="pr-qty" placeholder="Qty" value="${escAttr(p.qty)}" style="flex:0 0 60px;">
+        <button type="button" onclick="this.parentElement.remove()">✕</button>`;
+      el.appendChild(row);
+    }
+    function getProducts(){
+      return [...document.querySelectorAll('#list-products .list-row')].map(r=>({
+        product:r.querySelector('.pr-product').value, returnableStatus:r.querySelector('.pr-status').value,
+        modelId:r.querySelector('.pr-model').value, unitPrice:r.querySelector('.pr-price').value,
+        qty:r.querySelector('.pr-qty').value
+      })).filter(p=>p.product);
+    }
+
+    // ---------- Operation History ----------
+    function addOphRow(o){
+      o = o || {};
+      const el = document.getElementById('list-oph');
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.style.flexDirection = 'column';
+      row.innerHTML = `
+        <div style="display:flex;gap:8px;width:100%;">
+          <select class="oph-role" style="flex:0 0 100px;">
+            <option value="buyer">Buyer</option>
+            <option value="system">System</option>
+          </select>
+          <input class="oph-name" placeholder="操作人（選填）" style="flex:1;" value="${escAttr(o.name)}">
+          <input class="oph-time" placeholder="時間 例：2026-07-02 11:36 +0800" style="flex:1;" value="${escAttr(o.time)}">
+        </div>
+        <input class="oph-title" placeholder="操作標題 例：Request Return/Refund" value="${escAttr(o.title)}" style="width:100%;margin-top:6px;">
+        <textarea class="oph-detail" placeholder="詳細內容（可換行）" style="width:100%;margin-top:6px;min-height:50px;">${esc(o.detail)}</textarea>
+        <button type="button" onclick="this.parentElement.remove()" style="align-self:flex-end;margin-top:6px;">刪除此紀錄 ✕</button>`;
+      el.appendChild(row);
+      if(o.role) row.querySelector('.oph-role').value = o.role;
+    }
+    function getOph(){
+      return [...document.querySelectorAll('#list-oph .list-row')].map(r=>({
+        role:r.querySelector('.oph-role').value, name:r.querySelector('.oph-name').value,
+        time:r.querySelector('.oph-time').value, title:r.querySelector('.oph-title').value,
+        detail:r.querySelector('.oph-detail').value
+      })).filter(o=>o.title);
+    }
+
+    // ---------- Chat History ----------
+    function addChatRow(m){
+      m = m || {};
+      const el = document.getElementById('list-chat');
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.style.flexDirection = 'column';
+      row.innerHTML = `
+        <div style="display:flex;gap:8px;width:100%;">
+          <select class="chat-role" style="flex:0 0 110px;">
+            <option value="buyer">買家</option>
+            <option value="seller">賣家</option>
+            <option value="cs">客服（自己）</option>
+            <option value="system">系統訊息</option>
+          </select>
+          <input class="chat-name" placeholder="顯示名稱（選填）" style="flex:1;" value="${escAttr(m.name)}">
+          <input class="chat-time" placeholder="時間 例：11:36" style="flex:1;" value="${escAttr(m.time)}">
+        </div>
+        <textarea class="chat-text" placeholder="對話內容（可換行）" style="width:100%;margin-top:6px;min-height:50px;">${esc(m.text)}</textarea>
+        <button type="button" onclick="this.parentElement.remove()" style="align-self:flex-end;margin-top:6px;">刪除此則 ✕</button>`;
+      el.appendChild(row);
+      if(m.role) row.querySelector('.chat-role').value = m.role;
+    }
+    function getChat(){
+      return [...document.querySelectorAll('#list-chat .list-row')].map(r=>({
+        role:r.querySelector('.chat-role').value, name:r.querySelector('.chat-name').value,
+        time:r.querySelector('.chat-time').value, text:r.querySelector('.chat-text').value
+      })).filter(m=>m.text);
+    }
+
+    // ---------- Discuss ----------
+    function addDiscussRow(d){
+      d = d || {};
+      const el = document.getElementById('list-discuss');
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.style.flexDirection = 'column';
+      row.innerHTML = `
+        <div style="display:flex;gap:8px;width:100%;">
+          <input class="ds-name" placeholder="發言人 例：Sherry（主管）" style="flex:1;" value="${escAttr(d.name)}">
+          <input class="ds-time" placeholder="時間 例：2026-07-02 14:00" style="flex:1;" value="${escAttr(d.time)}">
+        </div>
+        <textarea class="ds-text" placeholder="討論內容（可換行）" style="width:100%;margin-top:6px;min-height:50px;">${esc(d.text)}</textarea>
+        <button type="button" onclick="this.parentElement.remove()" style="align-self:flex-end;margin-top:6px;">刪除此則 ✕</button>`;
+      el.appendChild(row);
+    }
+    function getDiscuss(){
+      return [...document.querySelectorAll('#list-discuss .list-row')].map(r=>({
+        name:r.querySelector('.ds-name').value, time:r.querySelector('.ds-time').value,
+        text:r.querySelector('.ds-text').value
+      })).filter(d=>d.text);
+    }
+
+    // ---------- 讀取既有案件（編輯模式） ----------
+    const editId = new URLSearchParams(location.search).get('id');
+    async function loadForEdit(){
+      if(!editId) return;
+      document.getElementById('modeLabel').textContent = '編輯案件：' + editId;
+      try{
+        const res = await fetch(API_URL + '?action=get&id=' + encodeURIComponent(editId));
+        const d = await res.json();
+        if(d.error){ showMsg('error','找不到這筆案件，可能已被刪除。'); return; }
+
+        document.getElementById('f_id').value = d.id || ''; document.getElementById('f_id').disabled = true;
+        document.getElementById('f_title').value = d.title || '';
+        document.getElementById('f_orderId').value = d.orderId || '';
+        document.getElementById('f_orderSn').value = d.orderSn || '';
+        document.getElementById('f_returnSn').value = d.returnSn || '';
+        document.getElementById('f_status').value = d.status || '';
+        document.getElementById('f_returnStatus').value = d.returnStatus || '';
+        document.getElementById('f_difficulty').value = d.difficulty || '';
+
+        const s = d.summary || {};
+        document.getElementById('s_caseUpdate').value = s.caseUpdate || '';
+        document.getElementById('s_lastAgentNotes').value = s.lastAgentNotes || '';
+        document.getElementById('s_requestType').value = s.requestType || '';
+        document.getElementById('s_noOfRR').value = s.noOfRR || '';
+        document.getElementById('s_forwardLogisticsStatus').value = s.forwardLogisticsStatus || '';
+        document.getElementById('s_rrRaisedTiming').value = s.rrRaisedTiming || '';
+        document.getElementById('s_buyerCategory').value = s.buyerCategory || '';
+        document.getElementById('s_sellerCategory').value = s.sellerCategory || '';
+        document.getElementById('s_buyerEvidence').value = s.buyerEvidence || '';
+        document.getElementById('s_returnReason').value = s.returnReason || '';
+        document.getElementById('s_aiEvidence').value = (s.ai && s.ai.evidenceValidation) || '';
+        document.getElementById('s_aiRealReason').value = (s.ai && s.ai.realReturnReason) || '';
+        document.getElementById('s_aiAgreement').value = (s.ai && s.ai.agreement) || '';
+
+        fillKV('kv-generalInfo', d.generalInfo);
+        fillKV('kv-fwdFields', d.forwardLogistics && d.forwardLogistics.fields);
+        (d.forwardLogistics && d.forwardLogistics.parcels || []).forEach(addFwdParcelRow);
+        fillKV('kv-rvsFields', d.reverseLogistics && d.reverseLogistics.fields);
+        (d.reverseLogistics && d.reverseLogistics.parcels || []).forEach(addRvsParcelRow);
+        (d.timeline || []).forEach(addTimelineRow);
+        fillKV('kv-buyerReturn', d.buyerReturnInfo && d.buyerReturnInfo.fields);
+        setImages('img-buyerReturn', d.buyerReturnInfo && d.buyerReturnInfo.images);
+        fillKV('kv-sellerDispute', d.sellerDispute && d.sellerDispute.fields);
+        setImages('img-sellerDispute', d.sellerDispute && d.sellerDispute.images);
+        fillKV('kv-buyerInfo', d.buyerInfo);
+        fillKV('kv-sellerInfo', d.sellerInfo);
+        (d.productInfo && d.productInfo.items || []).forEach(addProductRow);
+        document.getElementById('pay_txnId').value = (d.paymentInfo && d.paymentInfo.transactionId) || '';
+        fillKV('kv-payBuyer', d.paymentInfo && d.paymentInfo.buyer);
+        fillKV('kv-paySeller', d.paymentInfo && d.paymentInfo.seller);
+        (d.operationHistory || []).forEach(addOphRow);
+        (d.chatHistory || []).forEach(addChatRow);
+        (d.discuss || []).forEach(addDiscussRow);
+      }catch(err){
+        showMsg('error','讀取案件失敗：' + (err.message||err));
+      }
+    }
+
+    function showMsg(type, text){
+      document.getElementById('msg').innerHTML = `<div class="msg ${type}">${esc(text)}</div>`;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    async function save(){
+      const id = document.getElementById('f_id').value.trim();
+      if(!id){ showMsg('error','請填寫案件編號 id。'); return; }
+
+      const payload = {
+        id, title: document.getElementById('f_title').value,
+        orderId: document.getElementById('f_orderId').value,
+        orderSn: document.getElementById('f_orderSn').value,
+        returnSn: document.getElementById('f_returnSn').value,
+        status: document.getElementById('f_status').value,
+        returnStatus: document.getElementById('f_returnStatus').value,
+        difficulty: document.getElementById('f_difficulty').value,
+        summary: {
+          caseUpdate: document.getElementById('s_caseUpdate').value,
+          lastAgentNotes: document.getElementById('s_lastAgentNotes').value,
+          requestType: document.getElementById('s_requestType').value,
+          noOfRR: document.getElementById('s_noOfRR').value,
+          forwardLogisticsStatus: document.getElementById('s_forwardLogisticsStatus').value,
+          rrRaisedTiming: document.getElementById('s_rrRaisedTiming').value,
+          buyerCategory: document.getElementById('s_buyerCategory').value,
+          sellerCategory: document.getElementById('s_sellerCategory').value,
+          buyerEvidence: document.getElementById('s_buyerEvidence').value,
+          returnReason: document.getElementById('s_returnReason').value,
+          ai: {
+            evidenceValidation: document.getElementById('s_aiEvidence').value,
+            realReturnReason: document.getElementById('s_aiRealReason').value,
+            agreement: document.getElementById('s_aiAgreement').value
+          }
+        },
+        generalInfo: getKV('kv-generalInfo'),
+        forwardLogistics: { fields: getKV('kv-fwdFields'), parcels: getFwdParcels() },
+        reverseLogistics: { fields: getKV('kv-rvsFields'), parcels: getRvsParcels() },
+        timeline: getTimeline(),
+        buyerReturnInfo: { fields: getKV('kv-buyerReturn'), images: getImages('img-buyerReturn') },
+        sellerDispute: { fields: getKV('kv-sellerDispute'), images: getImages('img-sellerDispute') },
+        buyerInfo: getKV('kv-buyerInfo'),
+        sellerInfo: getKV('kv-sellerInfo'),
+        productInfo: { items: getProducts() },
+        paymentInfo: {
+          transactionId: document.getElementById('pay_txnId').value,
+          buyer: getKV('kv-payBuyer'),
+          seller: getKV('kv-paySeller')
+        },
+        operationHistory: getOph(),
+        chatHistory: getChat(),
+        discuss: getDiscuss()
+      };
+
+      try{
+        const res = await fetch(API_URL, { method:'POST', body: JSON.stringify(payload) });
+        const result = await res.json();
+        if(result.error){ showMsg('error','儲存失敗：' + result.error); return; }
+        showMsg('success','已儲存！2 秒後將導向案件清單...');
+        setTimeout(()=>location.href='list.html', 1200);
+      }catch(err){
+        showMsg('error','儲存失敗，請確認 config.js 的 API_URL 設定，或檢查網路連線。錯誤：' + (err.message||err));
+      }
+    }
+
+    loadForEdit();
+  </script>
+</body>
+</html>

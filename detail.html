@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>SOP Tool 練習環境</title>
+<style>
+  :root{
+    --primary:#ee4d2d; --primary-dark:#d7431f; --border:#e8e8e8;
+    --bg:#f5f6f7; --text:#333; --text-light:#767676; --card:#fff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;color:var(--text);background:var(--bg);}
+  .topbar{height:52px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:16px;}
+  .topbar .logo{font-weight:700;color:var(--primary);font-size:18px;text-decoration:none;}
+  .topbar .env-tag{background:#ffece7;color:var(--primary);font-size:11px;padding:2px 6px;border-radius:3px;}
+  .topbar .caseid{margin-left:auto;font-size:13px;color:var(--text-light);}
+  .practice-banner{background:#fff3e0;color:#a15c00;text-align:center;font-size:13px;padding:6px 12px;border-bottom:1px solid #f0d9a8;}
+
+  .layout{display:flex;align-items:flex-start;max-width:1400px;margin:0 auto;}
+  .left-nav{position:sticky;top:0;width:190px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);
+    height:calc(100vh - 52px);overflow-y:auto;padding:8px 0;}
+  .left-nav li{list-style:none;padding:10px 16px;font-size:13px;cursor:pointer;color:var(--text-light);border-left:3px solid transparent;}
+  .left-nav li:hover{background:#fafafa;color:var(--text);}
+  .left-nav li.active{color:var(--primary);border-left-color:var(--primary);background:#fff5f0;font-weight:600;}
+
+  .content{flex:1;min-width:0;padding:16px;padding-bottom:80px;}
+  .right-panel{width:360px;flex-shrink:0;background:#fff;border-left:1px solid var(--border);
+    height:calc(100vh - 52px);position:sticky;top:0;display:flex;flex-direction:column;}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:6px;margin-bottom:16px;overflow:hidden;}
+  .card-body{padding:16px;}
+
+  .cs-header{padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;background:#fff;}
+  .cs-header .arrow{transition:transform .2s;font-size:11px;}
+  .cs-header.open .arrow{transform:rotate(90deg);}
+  .cs-header.open{border-bottom:1px solid var(--border);}
+  .cs-body{display:none;padding:16px;font-size:13px;line-height:1.7;}
+  .cs-body.show{display:block;}
+  .cs-row{display:flex;gap:8px;margin-bottom:6px;}
+  .cs-row .k{color:var(--text-light);flex-shrink:0;min-width:150px;}
+  .ai-box{margin-top:10px;padding:10px 12px;background:#fff8f2;border:1px solid #ffdcc4;border-radius:6px;}
+
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:13px;}
+  .field{display:flex;gap:6px;border-bottom:1px dashed #f0f0f0;padding-bottom:6px;}
+  .field .k{color:var(--text-light);min-width:150px;flex-shrink:0;}
+  .field .v{word-break:break-word;}
+  .masked{color:#8a94a6;letter-spacing:2px;}
+
+  table.mini{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px;}
+  table.mini th,table.mini td{border:1px solid var(--border);padding:6px 8px;text-align:left;}
+  table.mini th{background:#fafafa;color:var(--text-light);font-weight:500;}
+
+  .steps{display:flex;overflow-x:auto;padding:20px 4px;gap:0;}
+  .step{min-width:130px;text-align:center;position:relative;}
+  .step:not(:last-child)::after{content:"";position:absolute;top:6px;left:50%;width:100%;height:2px;background:#e8e8e8;}
+  .step .dot{width:12px;height:12px;border-radius:50%;background:#e8e8e8;margin:0 auto;position:relative;z-index:1;}
+  .step.done .dot{background:var(--primary);}
+  .step.active .dot{background:var(--primary);box-shadow:0 0 0 4px #ffe1d4;}
+  .step .title{font-size:12px;margin-top:8px;font-weight:600;}
+  .step .time{font-size:11px;color:var(--text-light);margin-top:2px;}
+
+  .tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
+  .tab{padding:12px 14px;font-size:13px;cursor:pointer;color:var(--text-light);border-bottom:2px solid transparent;}
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600;}
+  .tab-panes{flex:1;overflow-y:auto;padding:16px;}
+  .pane{display:none;font-size:13px;}
+  .pane.active{display:block;}
+  .empty-state{text-align:center;color:var(--text-light);padding:60px 10px;font-size:13px;}
+
+  .oph-item{border-bottom:1px solid #f0f0f0;padding:12px 0;}
+  .oph-item:last-child{border-bottom:none;}
+  .role-tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:3px;color:#fff;margin-bottom:6px;}
+  .role-buyer{background:#ffbb38;}
+  .role-system{background:#8a94a6;}
+  .oph-time{color:var(--text-light);font-size:11.5px;margin-bottom:6px;}
+  .oph-title{font-weight:600;margin-bottom:4px;}
+  .oph-detail{color:var(--text-light);font-size:12.5px;line-height:1.6;}
+
+  .chat-msg{display:flex;margin-bottom:12px;}
+  .chat-msg.left{justify-content:flex-start;}
+  .chat-msg.right{justify-content:flex-end;}
+  .chat-bubble{max-width:78%;padding:8px 12px;border-radius:10px;font-size:12.5px;line-height:1.6;}
+  .chat-msg.left .chat-bubble{background:#f2f3f5;border-top-left-radius:2px;}
+  .chat-msg.right .chat-bubble{background:#fff1ea;border-top-left-radius:10px;border-top-right-radius:2px;}
+  .chat-meta{font-size:11px;color:var(--text-light);margin-bottom:3px;}
+  .chat-system{text-align:center;color:var(--text-light);font-size:11.5px;margin:10px 0;}
+  .discuss-item{border-bottom:1px solid #f0f0f0;padding:10px 0;font-size:12.5px;}
+  .discuss-item:last-child{border-bottom:none;}
+  .discuss-meta{font-size:11.5px;color:var(--text-light);margin-bottom:4px;font-weight:600;}
+
+  .action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);
+    box-shadow:0 -2px 8px rgba(0,0,0,.05);z-index:50;}
+  .action-bar-toggle{text-align:center;padding:4px;cursor:pointer;color:var(--text-light);font-size:12px;}
+  .action-bar-toggle:hover{color:var(--primary);}
+  .action-bar-buttons{display:none;padding:10px 16px;gap:10px;align-items:center;flex-wrap:wrap;}
+  .action-bar-buttons.show{display:flex;}
+  .dropdown{position:relative;}
+  .btn{border:1px solid var(--border);background:#fff;padding:8px 14px;border-radius:4px;font-size:13px;cursor:pointer;}
+  .btn:hover{border-color:var(--primary);color:var(--primary);}
+  .btn-outline{border:1px solid var(--primary);color:var(--primary);background:#fff;padding:8px 14px;border-radius:4px;font-size:13px;cursor:pointer;}
+  .btn-outline:hover{background:#fff5f0;}
+  .dropdown-menu{display:none;position:absolute;bottom:110%;left:0;background:#fff;border:1px solid var(--border);
+    border-radius:4px;box-shadow:0 4px 14px rgba(0,0,0,.1);min-width:180px;overflow:hidden;}
+  .dropdown-menu.show{display:block;}
+  .dropdown-item{padding:9px 14px;font-size:13px;cursor:pointer;}
+  .dropdown-item:hover{background:#fafafa;color:var(--primary);}
+
+  #toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#333;color:#fff;
+    padding:8px 18px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:100;}
+  #toast.show{opacity:1;}
+
+  h4.section-title{font-size:15px;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .msg{padding:10px 14px;border-radius:4px;font-size:13px;margin:16px;}
+  .msg.error{background:#fff2f0;color:#cf1322;border:1px solid #ffccc7;}
+
+  .gallery-label{font-size:12.5px;color:var(--text-light);margin:14px 0 6px;}
+  .gallery{display:flex;gap:8px;flex-wrap:wrap;}
+  .gallery img{width:64px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:zoom-in;transition:transform .15s,border-color .15s;}
+  .gallery img:hover{transform:scale(1.06);border-color:var(--primary);}
+  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:center;justify-content:center;cursor:zoom-out;}
+  .lightbox.show{display:flex;}
+  .lightbox img{max-width:88%;max-height:88%;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.4);}
+  .lightbox-close{position:absolute;top:20px;right:28px;color:#fff;font-size:30px;cursor:pointer;line-height:1;}
+
+  .sop-step{border-bottom:1px solid #f0f0f0;}
+  .sop-step:last-child{border-bottom:none;}
+  .sop-step-header{display:flex;align-items:center;gap:8px;padding:12px 4px;cursor:pointer;}
+  .sop-check{font-size:14px;flex-shrink:0;}
+  .sop-kind-icon{font-size:13px;flex-shrink:0;}
+  .sop-q-text{flex:1;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .sop-arrow-answer{font-size:12.5px;color:var(--text-light);white-space:nowrap;flex-shrink:0;}
+  .sop-chevron{font-size:12px;color:#ccc;transition:transform .2s;flex-shrink:0;}
+  .sop-step.expanded .sop-chevron{transform:rotate(90deg);}
+  .sop-step-body{padding:0 4px 16px 36px;}
+  .sop-q-text-full{font-size:13.5px;font-weight:600;margin-bottom:8px;}
+  .sop-note{font-size:12.5px;color:var(--text-light);background:#fafafa;border-left:3px solid #ffbb38;padding:8px 10px;margin-bottom:10px;line-height:1.6;white-space:pre-line;}
+  .sop-link{font-size:12px;color:#2673dd;text-decoration:none;margin-left:4px;}
+  .sop-options{display:flex;flex-direction:column;gap:6px;}
+  .sop-option-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:13px;}
+  .sop-option-row:hover{border-color:var(--primary);}
+  .sop-option-row.selected{border-color:var(--primary);background:#fff5f0;}
+  .sop-option-row.disabled{cursor:default;}
+  .sop-radio-dot{width:14px;height:14px;border-radius:50%;border:2px solid #ccc;flex-shrink:0;}
+  .sop-option-row.selected .sop-radio-dot{border-color:var(--primary);background:radial-gradient(circle,var(--primary) 42%,transparent 46%);}
+  .sop-action-btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;}
+  .sop-action-btn:hover{background:var(--primary-dark);}
+  .sop-meta{font-size:11px;color:var(--text-light);margin-top:10px;}
+</style>
+</head>
+<body>
+
+<div class="practice-banner">🎓 練習環境 — 所有點擊僅在本機模擬操作路徑，不會送出任何真實請求</div>
+
+<div class="topbar">
+  <a href="list.html" class="logo">Shopee CS</a>
+  <span class="env-tag">練習模式</span>
+  <span class="caseid" id="caseIdLabel">載入中...</span>
+</div>
+
+<div id="loadError" class="msg error" style="display:none;"></div>
+
+<div class="layout" id="mainLayout" style="display:none;">
+  <ul class="left-nav" id="leftNav">
+    <li data-target="general-info" class="active">General Info</li>
+    <li data-target="forward-logistics-info">Forward Logistics Info</li>
+    <li data-target="reverse-logistics-info">Reverse Logistics Info</li>
+    <li data-target="timeline">Timeline</li>
+    <li data-target="buyer-return-info">Buyer Return Info</li>
+    <li data-target="seller-1st-dispute-info">Seller 1st Dispute</li>
+    <li data-target="buyer-info">Buyer Info</li>
+    <li data-target="seller-info">Seller Info</li>
+    <li data-target="product-info">Product Info</li>
+    <li data-target="payment-info">Payment Info</li>
+  </ul>
+
+  <main class="content">
+    <div class="card">
+      <div class="cs-header" id="csHeader" onclick="toggleSummary()"><span class="arrow">▸</span> Case Summary</div>
+      <div class="cs-body" id="csBody"></div>
+    </div>
+
+    <section id="general-info" class="card"><div class="card-body">
+      <h4 class="section-title">General Info</h4>
+      <div class="field-grid" id="general-info-body"></div>
+    </div></section>
+
+    <section id="forward-logistics-info" class="card"><div class="card-body">
+      <h4 class="section-title">Forward Logistics Info</h4>
+      <div class="field-grid" id="forward-logistics-fields"></div>
+      <div id="forward-logistics-table"></div>
+    </div></section>
+
+    <section id="reverse-logistics-info" class="card"><div class="card-body">
+      <h4 class="section-title">Reverse Logistics Info</h4>
+      <div class="field-grid" id="reverse-logistics-fields"></div>
+      <div id="reverse-logistics-table"></div>
+    </div></section>
+
+    <section id="timeline" class="card"><div class="card-body">
+      <h4 class="section-title">Timeline</h4>
+      <div class="steps" id="timelineSteps"></div>
+    </div></section>
+
+    <section id="buyer-return-info" class="card"><div class="card-body">
+      <h4 class="section-title">Buyer Return Info</h4>
+      <div class="field-grid" id="buyer-return-body"></div>
+      <div class="gallery-label">Images and Videos</div>
+      <div class="gallery" id="buyer-return-images"></div>
+    </div></section>
+
+    <section id="seller-1st-dispute-info" class="card"><div class="card-body">
+      <h4 class="section-title">Seller 1st Dispute</h4>
+      <div class="field-grid" id="seller-dispute-body"></div>
+      <div class="gallery-label">Images and Videos</div>
+      <div class="gallery" id="seller-dispute-images"></div>
+    </div></section>
+
+    <section id="buyer-info" class="card"><div class="card-body">
+      <h4 class="section-title">Buyer Info</h4>
+      <div class="field-grid" id="buyer-info-body"></div>
+    </div></section>
+
+    <section id="seller-info" class="card"><div class="card-body">
+      <h4 class="section-title">Seller Info</h4>
+      <div class="field-grid" id="seller-info-body"></div>
+    </div></section>
+
+    <section id="product-info" class="card"><div class="card-body">
+      <h4 class="section-title">Product Info</h4>
+      <div id="productTable"></div>
+    </div></section>
+
+    <section id="payment-info" class="card"><div class="card-body">
+      <h4 class="section-title">Payment Info</h4>
+      <p id="txnId" style="font-size:12.5px;color:var(--text-light);"></p>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;border:1px solid var(--border);border-radius:6px;padding:12px;">
+          <p style="font-weight:600;margin:0 0 8px;">Buyer Payment</p>
+          <div id="paymentBuyer"></div>
+        </div>
+        <div style="flex:1;min-width:260px;border:1px solid var(--border);border-radius:6px;padding:12px;">
+          <p style="font-weight:600;margin:0 0 8px;">Seller Income</p>
+          <div id="paymentSeller"></div>
+        </div>
+      </div>
+    </div></section>
+  </main>
+
+  <aside class="right-panel">
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-pane="sop">SOP</div>
+      <div class="tab" data-pane="oph">Operation History</div>
+      <div class="tab" data-pane="chat">Chat History</div>
+      <div class="tab" data-pane="discuss">Discuss</div>
+    </div>
+    <div class="tab-panes">
+      <div class="pane active" id="pane-sop"></div>
+      <div class="pane" id="pane-oph"></div>
+      <div class="pane" id="pane-chat"></div>
+      <div class="pane" id="pane-discuss"></div>
+    </div>
+  </aside>
+</div>
+
+<div class="action-bar" id="actionBar" style="display:none;">
+  <div class="action-bar-toggle" onclick="toggleActionBar()" id="abToggle">︿ 展開操作列</div>
+  <div class="action-bar-buttons" id="abButtons">
+    <div class="dropdown">
+      <button class="btn" onclick="toggleDropdown(event,'dd1')">CS Case ▾</button>
+      <div class="dropdown-menu" id="dd1"><div class="dropdown-item" onclick="logClick('CS Case')">CS Case</div></div>
+    </div>
+    <div class="dropdown">
+      <button class="btn" onclick="toggleDropdown(event,'dd2')">Validate Proof ▾</button>
+      <div class="dropdown-menu" id="dd2">
+        <div class="dropdown-item" onclick="logClick(&quot;Validate Buyer's Proof&quot;)">Validate Buyer's Proof</div>
+        <div class="dropdown-item" onclick="logClick(&quot;Validate Seller's Proof&quot;)">Validate Seller's Proof</div>
+      </div>
+    </div>
+    <button class="btn-outline" onclick="logClick('Leave a Message')">✉ Leave a Message</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightboxImg" src="">
+</div>
+
+<script src="config.js"></script>
+<script>
+  // ---------- SOP 累積式時間軸（全案件共用同一份流程） ----------
+  let sopFlow = null;
+  let sopSteps = [];
+  let sopExpandedIdx = -1;
+
+  async function loadSopFlow(){
+    const el = document.getElementById('pane-sop');
+    el.innerHTML = '<div class="empty-state">載入 SOP 流程中...</div>';
+    try{
+      const res = await fetch('sop_flow.json');
+      if(!res.ok){
+        el.innerHTML = '<div class="empty-state">尚未設定 SOP 流程（找不到 sop_flow.json），請聯絡管理員先透過 sop-editor.html 產生並放到同一個資料夾。</div>';
+        return;
+      }
+      const data = await res.json();
+      sopFlow = data;
+      startSopTimeline();
+    }catch(err){
+      el.innerHTML = '<div class="empty-state">SOP 流程載入失敗：' + esc(err.message||err) + '</div>';
+    }
+  }
+
+  function startSopTimeline(){
+    if(!sopFlow) return;
+    sopSteps = [];
+    sopExpandedIdx = -1;
+    pushSopStep(sopFlow.startNode);
+    renderSopTimeline();
+  }
+
+  function pushSopStep(nodeId){
+    const node = sopFlow.nodes[nodeId];
+    if(!node){
+      sopSteps.push({ type:'error', text: '找不到節點「' + nodeId + '」，請聯絡管理員檢查 SOP 設定。' });
+      return;
+    }
+    if(node.type === 'outcome'){
+      sopSteps.push({ type:'outcome', text: node.text, result: node.result, note: node.note || '' });
+      return;
+    }
+    sopSteps.push({
+      type: 'question',
+      kind: node.kind || 'manual',
+      question: node.text,
+      note: node.note || '',
+      link: node.link || null,
+      options: node.options || [],
+      answeredIndex: null,
+      timestamp: null
+    });
+  }
+
+  function formatNow(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
+  function chooseSopOption(idx, optIdx){
+    const step = sopSteps[idx];
+    step.answeredIndex = optIdx;
+    step.timestamp = formatNow();
+    sopExpandedIdx = -1;
+    pushSopStep(step.options[optIdx].next);
+    renderSopTimeline();
+    setTimeout(()=>{ const p=document.getElementById('pane-sop'); p.scrollTop = p.scrollHeight; }, 30);
+  }
+
+  function toggleSopStepView(idx){
+    sopExpandedIdx = (sopExpandedIdx === idx) ? -1 : idx;
+    renderSopTimeline();
+  }
+
+  function renderSopStepHtml(step, idx){
+    if(step.type === 'error'){
+      return `<div class="sop-step"><div class="sop-step-header" style="cursor:default;">
+        <span class="sop-check" style="color:#cf1322;">⚠️</span><span class="sop-q-text">${esc(step.text)}</span>
+      </div></div>`;
+    }
+    if(step.type === 'outcome'){
+      const isCorrect = step.result === 'correct';
+      const badge = isCorrect ? '✅' : '❌';
+      const label = isCorrect ? '正確處理' : '不符合SOP';
+      return `<div class="sop-step">
+        <div class="sop-step-header" style="cursor:default;">
+          <span class="sop-check">${badge}</span>
+          <span class="sop-q-text"><b>${label}：</b>${esc(step.text)}</span>
+        </div>
+        ${step.note ? `<div class="sop-step-body"><div class="sop-note">${esc(step.note)}</div></div>` : ''}
+      </div>
+      <div class="sop-step"><div class="sop-step-header" style="cursor:default;color:var(--text-light);">End</div></div>`;
+    }
+
+    const isAnswered = step.answeredIndex !== null;
+    const expanded = !isAnswered || sopExpandedIdx === idx;
+    const kindIcon = step.kind === 'system' ? '🖥️' : '👤';
+    const checkIcon = isAnswered ? '✅' : '⚪';
+
+    let html = `<div class="sop-step ${expanded?'expanded':''}">
+      <div class="sop-step-header" onclick="toggleSopStepView(${idx})">
+        <span class="sop-check">${checkIcon}</span>
+        <span class="sop-kind-icon">${kindIcon}</span>
+        <span class="sop-q-text">${esc(step.question)}</span>
+        ${isAnswered && !expanded ? `<span class="sop-arrow-answer">→ ${esc(step.options[step.answeredIndex].label)}</span>` : ''}
+        <span class="sop-chevron">›</span>
+      </div>`;
+
+    if(expanded){
+      html += `<div class="sop-step-body">
+        <div class="sop-q-text-full">${esc(step.question)}${step.link ? ` <a class="sop-link" href="${esc(step.link.url)}" target="_blank" onclick="event.stopPropagation()">📖 ${esc(step.link.label||'參考')}</a>` : ''}</div>
+        ${step.note ? `<div class="sop-note">${esc(step.note).replace(/\n/g,'<br>')}</div>` : ''}`;
+
+      if(step.options.length === 1 && !isAnswered){
+        html += `<button class="sop-action-btn" onclick="chooseSopOption(${idx},0)">${esc(step.options[0].label)}</button>`;
+      }else{
+        html += `<div class="sop-options">` + step.options.map((o,oi)=>{
+          const selected = step.answeredIndex === oi;
+          const clickable = isAnswered ? '' : `onclick="chooseSopOption(${idx},${oi})"`;
+          return `<div class="sop-option-row ${selected?'selected':''} ${isAnswered?'disabled':''}" ${clickable}>
+            <span class="sop-radio-dot"></span><span>${esc(o.label)}</span>
+          </div>`;
+        }).join('') + `</div>`;
+      }
+
+      if(isAnswered){
+        html += `<div class="sop-meta">By 你，${esc(step.timestamp)}</div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+    return html;
+  }
+
+  function renderSopTimeline(){
+    const el = document.getElementById('pane-sop');
+    el.innerHTML = sopSteps.map((s,i)=>renderSopStepHtml(s,i)).join('')
+      + `<div style="text-align:center;padding:16px 0;"><button class="btn" onclick="startSopTimeline()">🔄 重新開始</button></div>`;
+    requestAnimationFrame(()=>{ el.scrollTop = el.scrollHeight; });
+  }
+
+  function esc(s){ return (s===undefined||s===null)?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // ---------- 互動邏輯 ----------
+  function toggleSummary(){
+    document.getElementById('csHeader').classList.toggle('open');
+    document.getElementById('csBody').classList.toggle('show');
+  }
+  function setupNav(){
+    document.querySelectorAll('#leftNav li').forEach(li=>{
+      li.addEventListener('click',()=>{
+        document.querySelectorAll('#leftNav li').forEach(x=>x.classList.remove('active'));
+        li.classList.add('active');
+        document.getElementById(li.dataset.target).scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+    const sections=[...document.querySelectorAll('#leftNav li')].map(li=>({li,el:document.getElementById(li.dataset.target)}));
+    window.addEventListener('scroll',()=>{
+      let current=sections[0];
+      for(const s of sections){ if(s.el.getBoundingClientRect().top-60<=0) current=s; }
+      document.querySelectorAll('#leftNav li').forEach(x=>x.classList.remove('active'));
+      current.li.classList.add('active');
+    });
+  }
+  function setupTabs(){
+    document.querySelectorAll('#tabs .tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        document.querySelectorAll('#tabs .tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('pane-'+tab.dataset.pane).classList.add('active');
+      });
+    });
+  }
+  function toggleActionBar(){
+    const box=document.getElementById('abButtons');
+    const btn=document.getElementById('abToggle');
+    box.classList.toggle('show');
+    btn.textContent = box.classList.contains('show') ? '﹀ 收合操作列' : '︿ 展開操作列';
+    closeAllDropdowns();
+  }
+  function toggleDropdown(e,id){
+    e.stopPropagation();
+    const menu=document.getElementById(id);
+    const wasOpen=menu.classList.contains('show');
+    closeAllDropdowns();
+    if(!wasOpen) menu.classList.add('show');
+  }
+  function closeAllDropdowns(){ document.querySelectorAll('.dropdown-menu').forEach(m=>m.classList.remove('show')); }
+  document.addEventListener('click',closeAllDropdowns);
+  function logClick(label){
+    closeAllDropdowns();
+    const t=document.getElementById('toast');
+    t.textContent='✅ 已點選：'+label+'（練習模式，未送出真實請求）';
+    t.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+  }
+
+  // ---------- 圖片縮圖 / 燈箱 ----------
+  function renderGallery(containerId, urls){
+    const el = document.getElementById(containerId);
+    urls = (urls||[]).filter(u=>u && String(u).trim());
+    if(!urls.length){ el.innerHTML = '<span style="color:#999;font-size:13px;">-</span>'; return; }
+    el.innerHTML = urls.map(u=>`<img src="${esc(u)}" onclick="openLightbox('${escJs(u)}')" onerror="this.style.opacity=0.3;this.title='圖片載入失敗';">`).join('');
+  }
+  function escJs(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+  function openLightbox(url){
+    document.getElementById('lightboxImg').src = url;
+    document.getElementById('lightbox').classList.add('show');
+  }
+  function closeLightbox(){
+    document.getElementById('lightbox').classList.remove('show');
+  }
+
+  // ---------- 資料渲染 ----------
+  function renderKV(containerId, obj){
+    const el = document.getElementById(containerId);
+    const entries = Object.entries(obj || {});
+    el.innerHTML = entries.map(([k,v])=>{
+      const masked = (v === '***');
+      return `<div class="field"><span class="k">${esc(k)}:</span><span class="v ${masked?'masked':''}">${esc(v).replace(/\n/g,'<br>')}</span></div>`;
+    }).join('') || '<p style="color:#999;font-size:13px;">（無資料）</p>';
+  }
+
+  function renderSummary(s){
+    s = s || {};
+    let html = '';
+    const rows = [
+      ['Case Update', s.caseUpdate], ["Last Agent's Notes", s.lastAgentNotes],
+      ['Request Type', s.requestType], ['No of RR Raised', s.noOfRR],
+      ['Forward Logistics Status', s.forwardLogisticsStatus], ['RR Raised', s.rrRaisedTiming],
+      ['Buyer Category', s.buyerCategory], ['Seller Category', s.sellerCategory],
+      ['Buyer Evidence', s.buyerEvidence], ['Return Reason', s.returnReason],
+    ];
+    rows.forEach(([k,v])=>{
+      if(v===undefined || v==='') return;
+      html += `<div class="cs-row"><span class="k">${esc(k)}:</span><span>${esc(v).replace(/\n/g,'<br>')}</span></div>`;
+    });
+    if(s.ai){
+      html += '<div class="ai-box">';
+      if(s.ai.evidenceValidation) html += `<div class="cs-row"><span class="k">✨ Evidence Validation:</span><span>${esc(s.ai.evidenceValidation)}</span></div>`;
+      if(s.ai.realReturnReason) html += `<div class="cs-row"><span class="k">✨ Real Return Reason:</span><span>${esc(s.ai.realReturnReason)}</span></div>`;
+      if(s.ai.agreement) html += `<div class="cs-row"><span class="k">✨ Buyer/Seller Agreement:</span><span>${esc(s.ai.agreement)}</span></div>`;
+      html += '</div>';
+    }
+    document.getElementById('csBody').innerHTML = html || '<p style="color:#999;">（無摘要資料）</p>';
+  }
+
+  function renderTimeline(steps){
+    document.getElementById('timelineSteps').innerHTML = (steps||[]).map(s=>`
+      <div class="step ${esc(s.state||'')}">
+        <div class="dot"></div><div class="title">${esc(s.title)}</div><div class="time">${esc(s.time)}</div>
+      </div>`).join('');
+  }
+
+  function renderMiniTable(containerId, rows, keys, labels){
+    const el = document.getElementById(containerId);
+    if(!rows || !rows.length){ el.innerHTML=''; return; }
+    let html = '<table class="mini"><tr>' + labels.map(l=>`<th>${esc(l)}</th>`).join('') + '</tr>';
+    rows.forEach(r=>{ html += '<tr>' + keys.map(k=>`<td>${esc(r[k])}</td>`).join('') + '</tr>'; });
+    el.innerHTML = html + '</table>';
+  }
+
+  function renderProductTable(items){
+    const el = document.getElementById('productTable');
+    items = items || [];
+    if(!items.length){ el.innerHTML='<p style="color:#999;font-size:13px;">（無資料）</p>'; return; }
+    let html = '<table class="mini"><tr><th>Product</th><th>Returnable Status</th><th>Model ID</th><th>Unit Price</th><th>Qty</th></tr>';
+    items.forEach(p=>{
+      html += `<tr><td>${esc(p.product)}</td><td>${esc(p.returnableStatus)}</td><td>${esc(p.modelId)}</td><td>${esc(p.unitPrice)}</td><td>${esc(p.qty)}</td></tr>`;
+    });
+    el.innerHTML = html + '</table>';
+  }
+
+  function roleLabel(r){ return {buyer:'買家', seller:'賣家', cs:'客服', system:'系統'}[r] || r || ''; }
+
+  function renderChat(list){
+    const el = document.getElementById('pane-chat');
+    list = list || [];
+    if(!list.length){ el.innerHTML = '<div class="empty-state">（練習用：此區無資料）</div>'; return; }
+    el.innerHTML = list.map(m=>{
+      if(m.role === 'system'){
+        return `<div class="chat-system">${esc(m.text)}</div>`;
+      }
+      const side = (m.role === 'cs') ? 'right' : 'left';
+      return `<div class="chat-msg ${side}">
+        <div>
+          <div class="chat-meta">${esc(m.name) || roleLabel(m.role)} ｜ ${esc(m.time)}</div>
+          <div class="chat-bubble">${esc(m.text).replace(/\n/g,'<br>')}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderDiscuss(list){
+    const el = document.getElementById('pane-discuss');
+    list = list || [];
+    if(!list.length){ el.innerHTML = '<div class="empty-state">（練習用：此區無資料）</div>'; return; }
+    el.innerHTML = list.map(d=>`
+      <div class="discuss-item">
+        <div class="discuss-meta">${esc(d.name)} ｜ ${esc(d.time)}</div>
+        <div>${esc(d.text).replace(/\n/g,'<br>')}</div>
+      </div>`).join('');
+  }
+
+  function renderOperationHistory(items){
+    const el = document.getElementById('pane-oph');
+    items = items || [];
+    if(!items.length){ el.innerHTML = '<div class="empty-state">（無操作紀錄）</div>'; return; }
+    el.innerHTML = items.map(it=>`
+      <div class="oph-item">
+        <span class="role-tag role-${it.role==='buyer'?'buyer':'system'}">${it.role==='buyer'?'Buyer':'System'}</span>
+        <div class="oph-time">${it.name?esc(it.name)+' ｜ ':''}${esc(it.time)}</div>
+        <div class="oph-title">${esc(it.title)}</div>
+        <div class="oph-detail">${esc(it.detail).replace(/\n/g,'<br>')}</div>
+      </div>`).join('');
+  }
+
+  function render(d){
+    document.title = 'SOP Tool 練習環境 — ' + (d.title || d.id);
+    document.getElementById('caseIdLabel').textContent = 'Return ID：' + (d.id||'-') + '　Order ID：' + (d.orderId||'-');
+    renderSummary(d.summary);
+    renderKV('general-info-body', d.generalInfo);
+    renderKV('forward-logistics-fields', d.forwardLogistics && d.forwardLogistics.fields);
+    renderMiniTable('forward-logistics-table', d.forwardLogistics && d.forwardLogistics.parcels,
+      ['parcelNo','tracking','carrier','otp'], ['Parcel No.','Tracking Number','Carrier','OTP']);
+    renderKV('reverse-logistics-fields', d.reverseLogistics && d.reverseLogistics.fields);
+    renderMiniTable('reverse-logistics-table', d.reverseLogistics && d.reverseLogistics.parcels,
+      ['tracking','carrier','epod','epop'], ['Return Tracking Number','Carrier','ePOD','ePOP']);
+    renderTimeline(d.timeline);
+    renderKV('buyer-return-body', d.buyerReturnInfo && d.buyerReturnInfo.fields);
+    renderGallery('buyer-return-images', d.buyerReturnInfo && d.buyerReturnInfo.images);
+    renderKV('seller-dispute-body', d.sellerDispute && d.sellerDispute.fields);
+    renderGallery('seller-dispute-images', d.sellerDispute && d.sellerDispute.images);
+    renderKV('buyer-info-body', d.buyerInfo);
+    renderKV('seller-info-body', d.sellerInfo);
+    renderProductTable(d.productInfo && d.productInfo.items);
+    document.getElementById('txnId').textContent = 'Transaction ID: ' + ((d.paymentInfo && d.paymentInfo.transactionId) || '-');
+    renderKV('paymentBuyer', d.paymentInfo && d.paymentInfo.buyer);
+    renderKV('paymentSeller', d.paymentInfo && d.paymentInfo.seller);
+    renderOperationHistory(d.operationHistory);
+    renderChat(d.chatHistory);
+    renderDiscuss(d.discuss);
+
+    document.getElementById('mainLayout').style.display = 'flex';
+    document.getElementById('actionBar').style.display = 'block';
+    setupNav();
+    setupTabs();
+  }
+
+  async function loadCase(){
+    const id = new URLSearchParams(location.search).get('id');
+    const errEl = document.getElementById('loadError');
+    if(!id){
+      errEl.style.display='block';
+      errEl.innerHTML = '缺少案件編號，請從 <a href="list.html">案件清單</a> 進入。';
+      return;
+    }
+    document.getElementById('caseIdLabel').textContent = '載入中...（' + id + '）';
+    try{
+      const res = await fetch(API_URL + '?action=get&id=' + encodeURIComponent(id));
+      const data = await res.json();
+      if(data.error){
+        errEl.style.display='block';
+        errEl.innerHTML = '找不到案件 ID：' + esc(id) + '，請確認 Google Sheet 內是否有這筆資料，或回 <a href="list.html">案件清單</a>。';
+        return;
+      }
+      render(data);
+    }catch(err){
+      errEl.style.display='block';
+      errEl.innerHTML = '讀取失敗，請確認 config.js 內 API_URL 是否正確、Apps Script 是否已部署為「Anyone 可存取」。<br>錯誤訊息：' + esc(err.message||err);
+    }
+  }
+  loadCase();
+  loadSopFlow();
+</script>
+</body>
+</html>
