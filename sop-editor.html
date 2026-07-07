@@ -261,10 +261,10 @@
             <div class="sop-card-header">
               <span class="sop-check">✓</span>
               <span class="sop-icon">🏁</span>
-              <span class="sop-q wrap">${esc(node.text)}</span>
+              <span class="sop-q wrap">${esc(node.text).replace(/\n/g,'<br>')}</span>
             </div>
             <div class="sop-card-body">
-              ${node.note ? `<div class="sop-note">${esc(node.note)}</div>` : ''}
+              ${node.note ? `<div class="sop-note">${esc(node.note).replace(/\n/g,'<br>')}</div>` : ''}
               <div class="sop-result ${isCorrect?'ok':'bad'}">${isCorrect ? '✅ 正確處理' : '❌ 不符合 SOP'}</div>
             </div>
           </div>
@@ -277,7 +277,7 @@
             <div class="sop-card-header">
               <span class="sop-check pending"></span>
               <span class="sop-icon">${icon}</span>
-              <span class="sop-q wrap">${esc(node.text)}${node.link ? ` <a class="sop-link" href="${esc(node.link.url)}" target="_blank" onclick="event.stopPropagation()">📖 ${esc(node.link.label||'參考')}</a>` : ''}</span>
+              <span class="sop-q wrap">${esc(node.text).replace(/\n/g,'<br>')}${node.link ? ` <a class="sop-link" href="${esc(node.link.url)}" target="_blank" onclick="event.stopPropagation()">📖 ${esc(node.link.label||'參考')}</a>` : ''}</span>
             </div>
             <div class="sop-card-body">
               ${node.note ? `<div class="sop-note">${esc(node.note).replace(/\n/g,'<br>')}</div>` : ''}

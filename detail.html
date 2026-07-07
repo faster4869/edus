@@ -395,11 +395,11 @@
         label = isCorrect ? '正確處理' : '不符合SOP';
       }
       return `<div class="sop-step">
-        <div class="sop-step-header" style="cursor:default;">
+        <div class="sop-step-header" style="cursor:default;align-items:flex-start;">
           <span class="sop-check">${badge}</span>
-          <span class="sop-q-text"><b>${label}：</b>${esc(step.text)}</span>
+          <span class="sop-q-text" style="white-space:normal;overflow:visible;"><b>${label}：</b>${esc(step.text).replace(/\n/g,'<br>')}</span>
         </div>
-        ${step.note ? `<div class="sop-step-body"><div class="sop-note">${esc(step.note)}</div></div>` : ''}
+        ${step.note ? `<div class="sop-step-body"><div class="sop-note">${esc(step.note).replace(/\n/g,'<br>')}</div></div>` : ''}
         ${extra ? `<div class="sop-step-body">${extra}</div>` : ''}
       </div>
       <div class="sop-step"><div class="sop-step-header" style="cursor:default;color:var(--text-light);">End</div></div>`;
@@ -421,7 +421,7 @@
 
     if(expanded){
       html += `<div class="sop-step-body">
-        <div class="sop-q-text-full">${esc(step.question)}${step.link ? ` <a class="sop-link" href="${esc(step.link.url)}" target="_blank" onclick="event.stopPropagation()">📖 ${esc(step.link.label||'參考')}</a>` : ''}</div>
+        <div class="sop-q-text-full">${esc(step.question).replace(/\n/g,'<br>')}${step.link ? ` <a class="sop-link" href="${esc(step.link.url)}" target="_blank" onclick="event.stopPropagation()">📖 ${esc(step.link.label||'參考')}</a>` : ''}</div>
         ${step.note ? `<div class="sop-note">${esc(step.note).replace(/\n/g,'<br>')}</div>` : ''}`;
 
       if(step.options.length === 1 && !isAnswered){
