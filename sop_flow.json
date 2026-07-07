@@ -59921,14 +59921,14 @@
     "SOP68_Node170": {
       "type": "question",
       "kind": "manual",
-      "text": "風險買家初始提供證明是否有效?\n1)Open DMS>Order>Buyer's evidence\n2)若買家未上傳證明，選\"證明無效\"\n3)若買家有上傳證明，比對申退原因，確認買家提供證明是否可辨識申退品項",
+      "text": "風險買家初始證明是否有效?\nIn DMS > Case Intake > Initial Evidence, verify that required fields (issue description, at least one photo/video, order number) are present.\nIf all required items exist and are readable/relevant, select '初始證明有效'; else select '初始證明無效'",
       "options": [
         {
-          "label": "證明有效",
+          "label": "初始證據有效",
           "next": "SOP68_Node193"
         },
         {
-          "label": "證明無效",
+          "label": "初始證據無效",
           "next": "SOP68_Node171"
         }
       ]
@@ -75323,42 +75323,21 @@
       "note": ""
     },
     "SOP81_Node7": {
-      "type": "question",
-      "kind": "manual",
-      "text": "DJu003-拒絕賠償\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP81_Node8"
-        }
-      ]
-    },
-    "SOP81_Node30": {
-      "type": "question",
-      "kind": "manual",
-      "text": "DJu009-賠償賣家\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP81_Node29"
-        }
-      ]
-    },
-    "SOP81_Node11": {
-      "type": "question",
-      "kind": "manual",
-      "text": "DJu005-賠償賣家\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP81_Node13"
-        }
-      ]
-    },
-    "SOP81_Node13": {
       "type": "outcome",
       "result": "correct",
-      "text": "End",
+      "text": "DJu003-拒絕賠償\nJudge",
+      "note": ""
+    },
+    "SOP81_Node30": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "DJu009-賠償賣家\nJudge",
+      "note": ""
+    },
+    "SOP81_Node11": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "DJu005-賠償賣家\nJudge",
       "note": ""
     },
     "SOP81_Node28": {
@@ -75391,18 +75370,6 @@
         }
       ]
     },
-    "SOP81_Node29": {
-      "type": "outcome",
-      "result": "correct",
-      "text": "End",
-      "note": ""
-    },
-    "SOP81_Node14": {
-      "type": "outcome",
-      "result": "correct",
-      "text": "End",
-      "note": ""
-    },
     "SOP81_Node6": {
       "type": "question",
       "kind": "manual",
@@ -75419,15 +75386,10 @@
       ]
     },
     "SOP81_Node31": {
-      "type": "question",
-      "kind": "manual",
+      "type": "outcome",
+      "result": "correct",
       "text": "DJu010-拒絕賠償\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP81_Node32"
-        }
-      ]
+      "note": ""
     },
     "SOP81_Node9": {
       "type": "question",
@@ -75443,7 +75405,7 @@
     "SOP81_Node12": {
       "type": "question",
       "kind": "manual",
-      "text": "登 追款表 +將買家加入黑名單\nNote And Reminder",
+      "text": "登 追款表 +將買家加入黑名單\n黑名單Tag請使用\n賠償金額大於300 之換貨/補寄/補運費/補折扣碼/雙方已有協議金額\nNote And Reminder",
       "options": [
         {
           "label": "繼續",
@@ -75466,27 +75428,16 @@
         }
       ]
     },
-    "SOP81_Node32": {
+    "SOP81_Node15": {
       "type": "outcome",
       "result": "correct",
-      "text": "End",
-      "note": ""
-    },
-    "SOP81_Node15": {
-      "type": "question",
-      "kind": "manual",
       "text": "DJu004-賠償賣家\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP81_Node14"
-        }
-      ]
+      "note": ""
     },
     "SOP81_Node1": {
       "type": "question",
       "kind": "manual",
-      "text": "退款買家金額",
+      "text": "最大賠償金額判斷",
       "options": [
         {
           "label": "最大賠償金額>0",
@@ -75510,26 +75461,9 @@
       ]
     },
     "SOP81_Node2": {
-      "type": "question",
-      "kind": "manual",
+      "type": "outcome",
+      "result": "correct",
       "text": "DJu002-同意賠償\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP81_Node5"
-        }
-      ]
-    },
-    "SOP81_Node8": {
-      "type": "outcome",
-      "result": "correct",
-      "text": "End",
-      "note": ""
-    },
-    "SOP81_Node5": {
-      "type": "outcome",
-      "result": "correct",
-      "text": "End",
       "note": ""
     },
     "SOP81_Node3": {
@@ -77766,19 +77700,13 @@
       "options": [
         {
           "label": "賣家沒有例外商品之外的爭議",
-          "next": "SOP85_Node7"
+          "next": "SOP85_Node32"
         },
         {
           "label": "賣家還有例外商品之外的爭議",
           "next": "SOP1_Node253"
         }
       ]
-    },
-    "SOP85_Node25": {
-      "type": "outcome",
-      "result": "correct",
-      "text": "End",
-      "note": ""
     },
     "SOP85_Node24": {
       "type": "question",
@@ -77810,12 +77738,6 @@
         }
       ]
     },
-    "SOP85_Node20": {
-      "type": "outcome",
-      "result": "correct",
-      "text": "End",
-      "note": ""
-    },
     "SOP85_Node23": {
       "type": "question",
       "kind": "manual",
@@ -77834,7 +77756,7 @@
       "options": [
         {
           "label": "買家逾越鑑賞",
-          "next": "SOP85_Node21"
+          "next": "SOP85_Node33"
         },
         {
           "label": "買家未逾越鑑賞",
@@ -77843,31 +77765,15 @@
       ]
     },
     "SOP85_Node19": {
-      "type": "question",
-      "kind": "manual",
-      "text": "DJu175-拒絕賠償\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP85_Node18"
-        }
-      ]
-    },
-    "SOP85_Node21": {
-      "type": "question",
-      "kind": "manual",
-      "text": "DJu174-賠償賣家\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP85_Node20"
-        }
-      ]
-    },
-    "SOP85_Node18": {
       "type": "outcome",
       "result": "correct",
-      "text": "End",
+      "text": "DJu175-拒絕賠償\nJudge",
+      "note": ""
+    },
+    "SOP85_Node21": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "DJu174-賠償賣家\nJudge",
       "note": ""
     },
     "SOP85_Node1": {
@@ -77877,7 +77783,7 @@
       "options": [
         {
           "label": "1. 非例外商品 2. 商品頁未標示例外的例外商品",
-          "next": "SOP85_Node29"
+          "next": "SOP85_Node2"
         },
         {
           "label": "1.商品頁有標示例外的例外商品 2. 灰色地帶商品",
@@ -77886,15 +77792,10 @@
       ]
     },
     "SOP85_Node26": {
-      "type": "question",
-      "kind": "manual",
+      "type": "outcome",
+      "result": "correct",
       "text": "DJu176-拒絕賠償\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP85_Node25"
-        }
-      ]
+      "note": ""
     },
     "SOP85_Node7": {
       "type": "question",
@@ -77964,7 +77865,13 @@
       "text": "DJu180-賠償賣家\nJudge",
       "note": ""
     },
-    "SOP85_Node29": {
+    "SOP85_Node30": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "DJu179-拒絕賠償\nJudge",
+      "note": ""
+    },
+    "SOP85_Node32": {
       "type": "question",
       "kind": "system",
       "text": "加速審核標準判定",
@@ -77975,15 +77882,20 @@
         },
         {
           "label": "不符合加速審核流程",
-          "next": "SOP85_Node2"
+          "next": "SOP85_Node7"
         }
       ]
     },
-    "SOP85_Node30": {
-      "type": "outcome",
-      "result": "correct",
-      "text": "DJu179-拒絕賠償\nJudge",
-      "note": ""
+    "SOP85_Node33": {
+      "type": "question",
+      "kind": "manual",
+      "text": "登買家黑名單\n註3：\n例外商品請使用此Tag\n(Local)例外商品/個人衛生用品拆封\n/虛擬點數已儲值使用\n灰色地帶商品請使用Tag\n有使用行為導致毀損(商品損毀) 灰色地帶\nNote And Reminder",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "SOP85_Node21"
+        }
+      ]
     },
     "SOP86_Node4": {
       "type": "question",
@@ -78330,15 +78242,10 @@
       ]
     },
     "SOP88_Node31": {
-      "type": "question",
-      "kind": "manual",
+      "type": "outcome",
+      "result": "correct",
       "text": "DJu083-拒絕賠償\nJudge",
-      "options": [
-        {
-          "label": "繼續",
-          "next": "SOP88_Node32"
-        }
-      ]
+      "note": ""
     },
     "SOP88_Node73": {
       "type": "question",
@@ -78484,7 +78391,7 @@
     "SOP88_Node11": {
       "type": "question",
       "kind": "manual",
-      "text": "Local VM回覆\nSPX VM要求折扣碼補償且有提供不同意之處理方式\n請依案件實際狀況選擇對應選項\n需提供回收宅資(商品需回收)\n如系統看的到宅資且資料有效，可跳過發賣家證據卡\n如VM說明資料不足/VM回覆拒絕賠償\n則回原爭議流程，並且依照非物流相關問題繼續流程",
+      "text": "Local VM回覆\nSPX VM要求折扣碼補償且有提供不同意之處理方式\n請依案件實際狀況選擇對應選項\n需提供回收宅資(商品需回收)\n如系統看的到宅資且資料有效，可跳過發賣家證據卡\n如VM說明資料不足/VM回覆拒絕賠償\n則回原爭議流程，並且依照非物流相關問題繼續流程\n買家蓄意未寄出退貨商品\n此處專指買家退貨時僅刷條碼，未正確依流程將商品投入/放入寄件區",
       "options": [
         {
           "label": "需提供回收宅資(商品需回收) ",
@@ -78493,6 +78400,10 @@
         {
           "label": "需提供賠付對象 (VM已確認賠付) RR判定賠付對象為賣家",
           "next": "SOP60_Node678"
+        },
+        {
+          "label": "買家蓄意未寄出退貨商品",
+          "next": "SOP88_Node103"
         },
         {
           "label": "商品需等待尋找期",
@@ -78635,12 +78546,6 @@
           "next": "SOP88_Node63"
         }
       ]
-    },
-    "SOP88_Node32": {
-      "type": "outcome",
-      "result": "correct",
-      "text": "End",
-      "note": ""
     },
     "SOP88_Node42": {
       "type": "outcome",
@@ -79060,6 +78965,23 @@
       "result": "correct",
       "text": "DJu141-拒絕賠償\nJudge",
       "note": ""
+    },
+    "SOP88_Node102": {
+      "type": "outcome",
+      "result": "correct",
+      "text": "DJu189-同意賠償\nJudge",
+      "note": ""
+    },
+    "SOP88_Node103": {
+      "type": "question",
+      "kind": "manual",
+      "text": "將買家加入黑名單\n買家加入黑名單",
+      "options": [
+        {
+          "label": "繼續",
+          "next": "SOP88_Node102"
+        }
+      ]
     },
     "SOP89_Node3": {
       "type": "question",
